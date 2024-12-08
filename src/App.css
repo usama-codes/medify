@@ -4,9 +4,32 @@
     display: flex;
 }
 
-body {
-    padding: 0;
-    margin: 0;
+* {
+  padding: 0;
+  margin: 0;
+}
+
+
+/* SIDEBAR CSS */
+
+/* MAIN CONTAINER */
+.main-container {
+  display: flex;
+  transition: margin-left 0.3s ease;
+}
+
+.main-container.sidebar-open .card-container {
+  margin-left: 500px; /* Adjusted left margin when sidebar is open */
+}
+
+/* CONTENT AREA */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers child elements horizontally */
+  padding: 20px;
+  width: 100%;
 }
 
 .SideBar {
@@ -16,6 +39,10 @@ body {
     color: white;
     overflow-y: auto;
     position: fixed;
+}
+
+.sideBarExtra {
+  position: relative;
 }
 
 .SideBarList {
@@ -35,11 +62,15 @@ body {
     align-items: center;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     font-size: 18px;
+    transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .SideBarList .row:hover {
-    background-color: #191a2e;
+    background-color: #2a2a2a;
     cursor: pointer;
+    color: #90caf9;
+    font-weight: bold;
+    transform: scale(1.1);
 }
 
 img{
@@ -55,40 +86,171 @@ img{
     flex: 30%;
     display: grid;
     place-items: center;
+    margin-right: 10px;
+    transition: transform 0.5s ease;
+}
+
+.SideBarList .row:hover #icon {
+  transform: rotate(-15deg);
 }
 
 .row #title {
     flex: 65%;
 }
-
-.content {
-    margin-left: 250px;
-}
  
 .searchBar {
-    width: 100vw;
-    height: 50px;
+    width: 35%;
+    height: 45px;
     display: flex;
-    flex-direction: row;
-    justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin: 20px 0 0 25%;
+    position: relative;
 }
 
 #bar {
-    height: 60%;
-    width: 30%;
-    padding: 10px 10px 10px 30px; 
+    width: 30vw;
+    padding: 10px 10px 10px 50px;
+    height: 100%;
     border: 1px solid #ccc;
     border-radius: 25px;
     font-size: 18px;
-    padding-left: 50px;
-    margin-right: 525px;
 }
 
 .searchIcon {
     position: absolute;
-    left: 420px;
+    top: 50%;
+    left: 15px;
     transform: translateY(-50%);
     color: #aaa;
+    font-size: 20px;
+    pointer-events: none;
 }
+
+.content{
+  justify-content: center;
+}
+
+.SideBar {
+  transition: transform 0.3s ease;
+}
+
+.SideBar.closed {
+  transform: translateX(-100%);
+}
+
+.SideBar.open {
+  transform: translateX(0);
+}
+
+.hamburger {
+  font-size: 15px;
+  cursor: pointer;
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  z-index: 1000;
+}
+
+.icon-white {
+  color: rgb(255, 255, 255);
+}
+
+.icon-black {
+  color: rgb(0, 0, 0);
+}
+
+
+
+/* PROFILE PIC CSS */
+.userProfile {
+    height: 45px;
+    width: 45px;
+    border-radius: 50%;
+    padding: 0;
+    top: 20px;
+    right: 30px;
+    position: absolute;
+    object-fit: cover;
+}
+
+.username {
+    top: 30px;
+    right: 100px;
+    position: absolute;
+    font-family: 'Bahnscrift', Arial;
+    color: #595958;
+    font-size: 20px;
+}
+
+
+/* WELCOME PAGE CSS */
+.welcome-message-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: auto;
+  padding: 30px 0;
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0;
+}
+
+.welcome-message {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+  text-align: center;
+  margin: 0;
+  padding: 0 10px;
+  display: block;
+  white-space: normal;
+  overflow: visible; 
+  animation: none;
+}
+
+.good-morning {
+  color: #f39c12;
+}
+
+.good-afternoon {
+  color: #e67e22;
+}
+
+.good-evening {
+  color: #2980b9;
+}
+
+.welcome-message:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* CARD CSS */
+
+/* CARD CSS */
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px;
+  justify-content: flex-start; /* Aligns cards to the start (left) */
+  align-items: center;
+  margin-left: 200px; /* Default left margin */
+  transition: margin-left 0.3s ease; /* Smooth transition */
+  width: 100%;
+}
+
+
+.card {
+  width: 200px;
+  height: 220px;
+  border: 2px solid black;
+  border-radius: 10px; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;     
+}
+
