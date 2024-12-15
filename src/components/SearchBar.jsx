@@ -1,34 +1,53 @@
 import { useState } from 'react';
-import '../App.css'
+import '../App.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
+function SearchBar({ onSearch, onFocus, onBlur, searchResults, onBack }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [placeholder, setPlaceholder] = useState('Search...');
 
-function SearchBar() {
-    const [searchTerm, setSearchTerm] = useState('');
-    const [placeholder, setPlaceholder] = useState('Search...')
+  function handleSubmit(event) {
+    event.preventDefault();
+    onSearch(searchTerm);
+  }
 
-function handleSubmit() {
-    console.log(searchTerm);
-}
   return (
     <div>
-        <form onSubmit={handleSubmit} className="searchBar">
-            <div className="searchInputWrapper">
-                <FontAwesomeIcon icon={faMagnifyingGlass} className="searchIcon" size="lg" />
-                <input
-                    type="text"
-                    id="bar"
-                    placeholder={placeholder}
-                    onChange={(event) => setSearchTerm(event.target.value)}
-                    onFocus={() => setPlaceholder('')}
-                    onBlur={() => setPlaceholder('Search...')}
-                />
-            </div>
-        </form>
-
+      <form onSubmit={handleSubmit} className="searchBar">
+        <div className="searchInputWrapper">
+          {searchResults ? (
+            <FontAwesomeIcon 
+            icon={faArrowLeft} 
+            className="leftArrow" 
+            size="lg" 
+            onClick={() => {
+              setSearchTerm('');
+              onBack();
+            }}
+            style={{ cursor: 'pointer' }} />
+          ) : (
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="searchIcon" size="lg" />
+          )}
+          <input
+            type="text"
+            id="bar"
+            placeholder={placeholder}
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            onFocus={(event) => {
+              setPlaceholder('');
+              if (onFocus) onFocus(event);
+            }}
+            onBlur={(event) => {
+              setPlaceholder('Search...');
+              if (onBlur) onBlur(event);
+            }}
+          />
+        </div>
+      </form>
     </div>
-  )
+  );
 }
 
-export default SearchBar
+export default SearchBar;
