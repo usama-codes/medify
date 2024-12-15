@@ -5,13 +5,13 @@ import OrderPharmacy from './components/OrderPharmacy';
 import DashboardPharmacy from './components/DashboardPharmacy';
 import MedicinesPharmacy from './components/MedicinesPharmacy';
 import NotificationsPharmacy from './components/NotificationsPharmacy';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<Navigate to="/home" />} />
         <Route path="/home" element={<HomePharmacy />} />
         <Route path="/orders" element={<OrderPharmacy />} />
         <Route path="/dashboard" element={<DashboardPharmacy />} />
@@ -23,4 +23,3 @@ function App() {
 }
 
 export default App;
-

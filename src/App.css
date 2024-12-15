@@ -7,19 +7,31 @@
 * {
   padding: 0;
   margin: 0;
+  font-weight: 500;
 }
 
+body {
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  background-color: #f4f4f9; /* Light background color */
+  color: #333; /* Dark text color */
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  height: 100vh; /* Full viewport height */
+  margin: 0; /* Remove default margin */
+}
 
 /* SIDEBAR CSS */
 
 /* MAIN CONTAINER */
 .main-container {
+  min-height: 100vh; /* Make sure the container fills the whole viewport height */
   display: flex;
-  transition: margin-left 0.3s ease;
 }
 
 .main-container.sidebar-open .card-container {
-  margin-left: 500px; /* Adjusted left margin when sidebar is open */
+  margin-left: 275px; /* Adjusted left margin when sidebar is open */
+  width: calc(100% - 275px); /* Adjusts width based on new margin */
+  gap: 100px;
 }
 
 /* CONTENT AREA */
@@ -99,31 +111,50 @@ img{
 }
  
 .searchBar {
-    width: 35%;
+    width: 100%;
     height: 45px;
     display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically center the contents of searchBar */
+    padding: 10px 0; /* Optional: control padding for top/bottom spacing */
+}
+
+.searchInputWrapper {
+    display: flex;
     align-items: center;
-    margin: 20px 0 0 25%;
-    position: relative;
+    width: 100%; /* Full width of the parent container */
+    position: relative; /* Necessary for the icon positioning */
+    margin-bottom: 30px;
 }
 
 #bar {
-    width: 30vw;
-    padding: 10px 10px 10px 50px;
-    height: 100%;
-    border: 1px solid #ccc;
+    width: 100%; /* Make the input take up full width of the wrapper */
+    padding: 5px 10px 5px 40px; /* Space for the icon */
+    height: 45px;
+    border: 1px solid #747171;
     border-radius: 25px;
     font-size: 18px;
+    font-family: Arial, sans-serif;
+    outline: none;
 }
 
 .searchIcon {
     position: absolute;
     top: 50%;
-    left: 15px;
-    transform: translateY(-50%);
+    left: 10px; /* Adjust the position within the padding of the input */
+    transform: translateY(-50%); /* Ensure it’s vertically centered */
     color: #aaa;
     font-size: 20px;
-    pointer-events: none;
+    pointer-events: none; /* Prevent the icon from blocking interaction */
+}
+
+.leftArrow {
+    position: absolute;
+    top: 50%;
+    left: 10px; /* Adjust the position within the padding of the input */
+    transform: translateY(-50%); /* Ensure it’s vertically centered */
+    color: #aaa;
+    font-size: 20px;
 }
 
 .content{
@@ -146,8 +177,8 @@ img{
   font-size: 15px;
   cursor: pointer;
   position: absolute;
-  left: 10px;
-  top: 5px;
+  left: 15px;
+  top: 25px;
   z-index: 1000;
 }
 
@@ -177,7 +208,7 @@ img{
     top: 30px;
     right: 100px;
     position: absolute;
-    font-family: 'Bahnscrift', Arial;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: #595958;
     font-size: 20px;
 }
@@ -193,34 +224,21 @@ img{
   position: relative;
   width: 100%;
   max-width: 1200px;
-  margin: 0;
+  margin: 0 auto;
 }
 
 .welcome-message {
+  color: #191a2e;
   font-size: 2rem;
   font-weight: 700;
-  color: #333;
   text-align: center;
-  margin: 0;
+  margin-top: -50px;
   padding: 0 10px;
   display: block;
   white-space: normal;
   overflow: visible; 
   animation: none;
 }
-
-.good-morning {
-  color: #f39c12;
-}
-
-.good-afternoon {
-  color: #e67e22;
-}
-
-.good-evening {
-  color: #2980b9;
-}
-
 .welcome-message:hover {
   transform: scale(1.05);
   transition: transform 0.3s ease-in-out;
@@ -228,29 +246,334 @@ img{
 
 /* CARD CSS */
 
-/* CARD CSS */
 .card-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 50px;
+  gap: 40px;
   justify-content: flex-start; /* Aligns cards to the start (left) */
-  align-items: center;
-  margin-left: 200px; /* Default left margin */
+  align-items: flex-start; /* Aligns items to the top */
+  margin-left: 100px; /* Default left margin */
   transition: margin-left 0.3s ease; /* Smooth transition */
-  width: 100%;
+  width: calc(100% - 100px); /* Adjusts width based on margin */
 }
-
 
 .card {
-  width: 200px;
+  background-color: #1a84fe;
+  color: #ffffff;
+  width: 300px;
   height: 220px;
-  border: 2px solid black;
-  border-radius: 10px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-  background-color: #fff;
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;     
+  justify-content: center; 
+  align-items: center; 
+  box-sizing: border-box; 
+  transition: margin-left 0.5s ease, width 0.5s ease, transform ease 0.4s;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1); 
 }
 
+.card.chart-card {
+  width: 100%;
+  height: auto; 
+  padding: 20px;
+}
+
+.card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 20px rgba(70, 130, 180, 0.5);
+}
+
+.card-content { 
+  flex-grow: 1; 
+}
+
+.card-content .info-title {
+  font-size: 1.2em; 
+  font-weight: bold; 
+}
+
+.card-content .info-number {
+  font-size: 2em; /* Make the number stand out more */
+  font-weight: 700;
+  color: #f7b42c; /* Use a contrasting color for the number */
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0); }
+}
+
+.card-content .urgent {
+  animation: bounce 1s ease-in-out infinite; /* Apply the bounce animation */
+  color: #fc575e; /* Red color for urgency */
+  font-weight: 700;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.2em;
+}
+
+.card-content p {
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+/* Progress Bar Styling */
+.progress-container {
+  margin-top: 20px;
+  background-color: #ddd;
+  height: 10px;
+  border-radius: 5px;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 5px;
+  background-color: #ffffff;
+}
+
+.profile-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.notifications {
+  margin-left: 700px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.notification-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Specific styles for the Pending Orders card */
+.card.pending-orders {
+  background-color: #1a84fe; /* Background color */
+  color: #ffffff; /* Text color */
+}
+
+.card.pending-orders .card-header h3,
+.card.pending-orders .card-content p {
+  color: #ffffff; /* White text color */
+}
+
+.card.pending-orders .fa-box-open {
+  color: #ffffff; /* White icon color */
+}
+
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+}
+
+.charts-container .pie-chart,
+.charts-container .top-selling-products {
+  flex: 1 1 50%; /* Adjust the width of the charts */
+  min-width: 300px; /* Minimum width to ensure charts don't get too small */
+}
+
+.order-list {
+  margin-top: 30px;
+}
+
+.order-list-ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.order-card {
+  padding: 15px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.order-card h4 {
+  font-size: 1.2em;
+}
+
+.order-card p {
+  font-size: 1em;
+  margin: 5px 0;
+}
+
+.order-pharmacy .sideBar {
+  transform: translateX(-100%);
+}
+
+.order-pharmacy.sidebar-open .sideBar{
+  transform: translateX(0);
+}
+
+.order-pharmacy .header {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 100%; 
+  height: 60px; /* Set the height for the search bar */
+  top: 20px; /* Adjust as necessary */
+  position: relative;
+  z-index: 2; /* Ensure the search bar is above other elements */
+}
+
+.order-pharmacy .main-content {
+  margin-left: 0; /* Adjust based on the sidebar width */
+  flex-grow: 1;
+  padding: 20px;
+  transition: margin-left 0.3s ease; /* Smooth transition for the main content */
+}
+
+.order-pharmacy.sidebar-open {
+  height: 100vh;
+  width: 250px; /* Set a fixed width for the sidebar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: transform 0.3s ease;
+  z-index: 1; /* Ensure the sidebar is above other elements */
+}
+
+.order-pharmacy.sidebar-open .main-content {
+  margin-left: 275px; /* Adjust based on the sidebar width */
+}
+
+.order-pharmacy.sidebar-open .order-stats {
+  width: calc(100% - 275px); /* Adjust based on the sidebar width */
+  gap: 100px;
+}
+
+.order-pharmacy .header {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+  width: 100%; 
+  top: -20px;
+  position: relative;
+  z-index: 2;
+  margin-left: 15px;
+}
+
+.order-pharmacy .header {
+  display: flex;
+  justify-content: center; /* Centers the content horizontally */
+  align-items: center; /* Centers the content vertically */
+  margin-top: 30px;
+}
+
+.order-pharmacy {
+  padding: 0;
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+}
+
+.order-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-left: 50px;
+  justify-content: space-between;
+}
+
+.order-stats .card {
+  flex: 1 1 calc(25% - 20px); /* Adjust the width of the cards */
+  min-width: 200px; /* Minimum width to ensure cards don't get too small */
+  max-width: 300px; /* Maximum width to ensure cards don't get too large */
+}
+
+.order-pharmacy .header .search-bar-container {
+  width: 90%; /* Adjust as necessary to control the width of the search bar */
+}
+
+.pie-chart {
+  margin-bottom: 40px;
+  margin-top: 30px;
+  margin-left: 50px;
+  text-align: center;
+}
+
+.order-list {
+  margin-top: 30px;
+}
+
+.order-card {
+  padding: 15px;
+  border: 1px solid #cccbcb;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.order-card h4 {
+  font-size: 1.2em;
+}
+
+.order-card p {
+  font-size: 1em;
+  margin: 5px 0;
+}
+
+
+.order-info h4 {
+  margin: 0 0 0.5rem 0;
+}
+
+.order-info p {
+  margin: 0.25rem 0;
+}
+
+.search-bar-container input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+
+.bar-chart{
+  width: auto;
+  margin: 40px 0 40px 30px;
+  text-align: center;
+  padding: 20px;
+}
+
+.search-result-card .card-header .card-title {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.search-result-card .card-content p {
+  font-size: 22px;
+} 
+
+.header .left-arrow {
+  margin-right: 20px;
+  padding-right: 20px;
+
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    grid-template-columns: 1fr;  /* Stack cards in a single column for small screens */
+  }
+
+  .card {
+    max-width: 100%; /* Allow cards to take up the full width on mobile */
+  }
+}
