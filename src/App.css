@@ -4,6 +4,14 @@
     display: flex;
 }
 
+*::before{
+  box-sizing: border-box;
+}
+
+*::after{
+  box-sizing: border-box;
+}
+
 * {
   padding: 0;
   margin: 0;
@@ -29,9 +37,12 @@ body {
 }
 
 .main-container.sidebar-open .card-container {
-  margin-left: 275px; /* Adjusted left margin when sidebar is open */
   width: calc(100% - 275px); /* Adjusts width based on new margin */
   gap: 100px;
+}
+
+.main-container.sidebar-open .content {
+  margin-left: 275px;
 }
 
 /* CONTENT AREA */
@@ -51,6 +62,11 @@ body {
     color: white;
     overflow-y: auto;
     position: fixed;
+    top: 0;
+    left: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 2;
 }
 
 .sideBarExtra {
@@ -125,6 +141,7 @@ img{
     width: 100%; /* Full width of the parent container */
     position: relative; /* Necessary for the icon positioning */
     margin-bottom: 30px;
+    position: relative;
 }
 
 #bar {
@@ -157,10 +174,6 @@ img{
     font-size: 20px;
 }
 
-.content{
-  justify-content: center;
-}
-
 .SideBar {
   transition: transform 0.3s ease;
 }
@@ -176,7 +189,7 @@ img{
 .hamburger {
   font-size: 15px;
   cursor: pointer;
-  position: absolute;
+  position: fixed;
   left: 15px;
   top: 25px;
   z-index: 1000;
@@ -328,20 +341,6 @@ img{
   font-weight: bold;
 }
 
-/* Progress Bar Styling */
-.progress-container {
-  margin-top: 20px;
-  background-color: #ddd;
-  height: 10px;
-  border-radius: 5px;
-}
-
-.progress-bar {
-  height: 100%;
-  border-radius: 5px;
-  background-color: #ffffff;
-}
-
 .profile-container {
   display: flex;
   margin-bottom: 20px;
@@ -375,15 +374,17 @@ img{
 
 .charts-container {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 20px;
   justify-content: space-between;
+  margin-left: 0;
 }
 
 .charts-container .pie-chart,
 .charts-container .top-selling-products {
   flex: 1 1 50%; /* Adjust the width of the charts */
   min-width: 300px; /* Minimum width to ensure charts don't get too small */
+  max-width: 50%;
 }
 
 .order-list {
@@ -433,10 +434,13 @@ img{
 }
 
 .order-pharmacy .main-content {
-  margin-left: 0; /* Adjust based on the sidebar width */
+  padding: 0;
+  margin: 0; /* Adjust based on the sidebar width */
   flex-grow: 1;
   padding: 20px;
   transition: margin-left 0.3s ease; /* Smooth transition for the main content */
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .order-pharmacy.sidebar-open {
@@ -451,11 +455,14 @@ img{
 
 .order-pharmacy.sidebar-open .main-content {
   margin-left: 275px; /* Adjust based on the sidebar width */
+  width: calc(100% - 275px); /* Adjust based on the sidebar width */
 }
 
 .order-pharmacy.sidebar-open .order-stats {
   width: calc(100% - 275px); /* Adjust based on the sidebar width */
-  gap: 100px;
+  margin-left: 100px;
+  gap: 20px 100px;
+  justify-content: center;
 }
 
 .order-pharmacy .header {
@@ -467,12 +474,6 @@ img{
   position: relative;
   z-index: 2;
   margin-left: 15px;
-}
-
-.order-pharmacy .header {
-  display: flex;
-  justify-content: center; /* Centers the content horizontally */
-  align-items: center; /* Centers the content vertically */
   margin-top: 30px;
 }
 
@@ -481,31 +482,47 @@ img{
   margin: 0;
   font-family: 'Inter', sans-serif;
   display: flex;
+  height: 100vh;
 }
 
 .order-stats {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin-left: 50px;
+  gap: 40px;
+  margin-left: 40px;
   justify-content: space-between;
 }
 
 .order-stats .card {
-  flex: 1 1 calc(25% - 20px); /* Adjust the width of the cards */
+  flex: 1 1 calc(25% - 30px); /* Adjust the width of the cards */
   min-width: 200px; /* Minimum width to ensure cards don't get too small */
   max-width: 300px; /* Maximum width to ensure cards don't get too large */
+  box-sizing: border-box;
 }
 
 .order-pharmacy .header .search-bar-container {
   width: 90%; /* Adjust as necessary to control the width of the search bar */
+  margin-top: -20px;
 }
 
 .pie-chart {
   margin-bottom: 40px;
-  margin-top: 30px;
+  margin-top: 50px;
   margin-left: 50px;
   text-align: center;
+  align-items: center;
+}
+
+.pieChart {
+  height: 300px;
+  width: 500px;
+  padding: 10px;
+}
+
+.barChart {
+  height: 400px;
+  width: 500px;
+  padding: 10px;
 }
 
 .order-list {
@@ -566,6 +583,144 @@ img{
   margin-right: 20px;
   padding-right: 20px;
 
+}
+
+/* Styles for the table */
+.table-container {
+  margin-top: 20px;
+}
+
+.order-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.order-table th,
+.order-table td {
+  border: 1px solid #ddd;
+  padding: 12px 15px;
+  text-align: left;
+}
+
+/* Checkbox styles */
+.checkbox-cell {
+  width: 40px;
+  text-align: center;
+}
+
+.order-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Action icons styles */
+.action-cell {
+  width: 100px;
+  text-align: center;
+}
+
+.action-icons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-icon {
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.edit-icon:hover {
+  color: #1a84fe;
+}
+
+.delete-icon:hover {
+  color: #fe3c3d;
+}
+
+.order-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.order-table tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.order-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.filter-select {
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+  min-width: 120px;
+  height: 45px;
+  font-size: 14px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1a84fe;
+}
+
+.filter-button {
+  position: absolute;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  z-index: 2;
+  padding: 10px;
+  right: 3%;
+  top: 0;
+}
+
+.filter-button:hover {
+  color: #1a84fe;
+}
+
+.filter-dropdown {
+  position: absolute;
+  right: 0;
+  top: 45px;
+  background: linear-gradient(135deg, #f4f4f9, #e6e6f0);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 180px;
+  padding: 10px 0;
+}
+
+.filter-option {
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  border-radius: 4px;
+  margin: 5px 10px;
+}
+
+.filter-option:hover {
+  color: #1a84fe;
+  background-color: #e6f3ff;
+}
+
+.filter-option.active {
+  background-color: #e6f3ff;
+  color: #1a84fe;
+}
+
+.searchInputWrapper {
+  position: relative;
+  width: 100%;
 }
 
 @media (max-width: 768px) {

@@ -3,9 +3,8 @@ import '../App.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
-function SearchBar({ onSearch, onFocus, onBlur, searchResults, onBack }) {
+function SearchBar({ onSearch, onFocus, onBlur, searchResults, onBack, placeholder="Search..." }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [placeholder, setPlaceholder] = useState('Search...');
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -36,11 +35,11 @@ function SearchBar({ onSearch, onFocus, onBlur, searchResults, onBack }) {
             value={searchTerm}
             onChange={(event) => setSearchTerm(event.target.value)}
             onFocus={(event) => {
-              setPlaceholder('');
+              placeholder = '';
               if (onFocus) onFocus(event);
             }}
             onBlur={(event) => {
-              setPlaceholder('Search...');
+              placeholder = 'Search...';
               if (onBlur) onBlur(event);
             }}
           />
