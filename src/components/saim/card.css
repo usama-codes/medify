@@ -1,0 +1,95 @@
+/* card.css */
+.card-container {
+  display: flex;
+  margin: 20px;
+  justify-content: center;
+  
+   /* Centers the cards on the page */
+}
+
+.card {
+  width: 260px; /* Increased card size */
+  padding: 15px;
+  /* border: 3px solid #e0e0e0; */
+  border-radius: 15px;
+  overflow: hidden;
+  text-align: center;
+  /* box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1); */
+  background-color: #fff;
+  transition: transform 0.6s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05); /* Slight zoom on hover */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+.card-image {
+  width: 100%;
+  height: 180px; /* Adjusted size for larger card */
+  overflow: hidden;
+  position: relative;
+  border-radius: 10px;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-hover-overlay {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.card:hover .card-hover-overlay {
+  display: flex;
+}
+
+.btn {
+  background-color:#014D4E;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #014D4E; /* Slightly darker shade on hover */
+}
+
+.card-info {
+  margin-top: 15px;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+.card-name,
+.card-quantity,
+.card-category,
+.card-price {
+  margin: 8px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #014D4E;
+}
+
+.card-name span,
+.card-quantity span,
+.card-category span,
+.card-price span {
+  font-weight: normal;
+  color: #555;
+}

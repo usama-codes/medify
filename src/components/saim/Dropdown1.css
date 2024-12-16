@@ -1,0 +1,37 @@
+/* Container for dropdown within the header */
+.dropdown-container {
+    display: inline-block; /* Ensures it doesn't expand unnecessarily */
+    margin: -10 20px; /* Adjust horizontal spacing */
+    vertical-align:middle; /* Aligns with the text and icons in the header */
+  }
+  
+  /* Label styling */
+  .dropdown-label {
+    font-size: 14px; /* Smaller font for the header */
+    margin-right: 10px; /* Space between label and dropdown */
+    color: #ccc; /* Match the header's lighter text color */
+  }
+  
+  /* Dropdown select box */
+  .dropdown-select {
+    width: 120px; /* Adjust width to suit the header */
+    padding: 5px 10px; /* Smaller padding for compact layout */
+    font-size: 14px; /* Smaller font size to match header items */
+    border: 1px solid #555; /* Subtle border to match dark theme */
+    border-radius: 4px;
+    background-color: #fff; /* White dropdown for contrast */
+    color: #014D4E; /* Dark text */
+    cursor: pointer;
+  }
+  
+  /* Dropdown hover effect */
+  .dropdown-select:hover {
+    border-color: #014D4E; /* Highlight on hover */
+  }
+  
+  /* Focus effect */
+  .dropdown-select:focus {
+    outline: none;
+    box-shadow: 0 0 4px #014D4E;
+  }
+  
