@@ -2,7 +2,6 @@ import React from 'react'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHouse } from '@fortawesome/free-solid-svg-icons';
 import { faDollarSign } from '@fortawesome/free-solid-svg-icons';
-import { faArrowTrendUp } from '@fortawesome/free-solid-svg-icons';
 import { faFlaskVial } from '@fortawesome/free-solid-svg-icons';
 import { faBriefcaseMedical } from '@fortawesome/free-solid-svg-icons';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
@@ -15,9 +14,9 @@ export const SideBarData = [
         link: '/home'
     },
     {
-        title: 'Transactions',
+        title: 'Orders',
         icon: <FontAwesomeIcon icon={faDollarSign} />,
-        link: '/transactions'
+        link: '/orders'
     },
     {
         title: 'Dashboard',
@@ -25,14 +24,9 @@ export const SideBarData = [
         link: '/dashboard'
     },
     {
-        title: 'Drugs',
+        title: 'Medicines',
         icon: <FontAwesomeIcon icon={faBriefcaseMedical} />,
-        link: '/drugs'
-    },
-    {
-        title: 'Activity',
-        icon: <FontAwesomeIcon icon={faArrowTrendUp} />,
-        link: '/activity'
+        link: '/medicines'
     },
     {
         title: 'Notifications',
