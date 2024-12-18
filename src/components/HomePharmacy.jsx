@@ -52,16 +52,20 @@ function HomePharmacy() {
       <SideBar />
       <div className="content">
         <div className="profile-container">
-          <ProfilePic className="username" />
-          <Link to="/notifications" className="notification-link">
-            <FontAwesomeIcon
-              icon={isHovered ? faBell : faBellRegular}
-              size="2x"
-              className="notifications"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            />
-          </Link>
+          <div className="profile-section">
+            <ProfilePic className="userProfile" />
+          </div>
+          <div className="notifications-section">
+            <Link to="/notifications" className="notification-link">
+              <FontAwesomeIcon
+                icon={isHovered ? faBell : faBellRegular}
+                size="2x"
+                className="notifications"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              />
+            </Link>
+          </div>
         </div>
         <div className="welcome-message-container">
           <div className={`welcome-message ${timeOfDay}`}>
@@ -75,41 +79,49 @@ function HomePharmacy() {
             title="Pending Orders"
             content={dummyData.pendingOrders}
             icon={faBoxOpen}
-            color="#1a84fe"
-          >
-          </Card>
+            color="#014d4e"
+            iconColor="#fff"
+            textColor="#fff"
+          />
           <Card
             title="Monthly Revenue"
             content={dummyData.monthlyRevenue}
             icon={faMoneyBillWave}
-            color="#f9285b"
-            progress={(dummyData.monthlyRevenue / 2000) * 100}
+            color="#fff"
+            iconColor="#014d4e"
+            textColor="#014d4e"
           />
           <Card
             title="Orders Completed"
             content={dummyData.ordersCompletedToday}
             icon={faBoxOpen}
-            color="#16c652"
+            color="#014d4e"
+            iconColor="#fff"
+            textColor="#fff"
           />
           <Card
             title="Today's Revenue"
             content={dummyData.revenueGeneratedToday}
             icon={faMoneyBillWave}
-            color="#fe3c3d"
+            color="#fff"
+            iconColor="#014d4e"
+            textColor="#014d4e"
           />
           <Card
             title="Top-Selling Drug"
             content={dummyData.topSellingDrug}
             icon={faVials}
-            color="#7338ea"
+            color="#014d4e"
+            iconColor="#fff"
+            textColor="#fff"
           />
           <Card
             title="Total Medicines"
             content={dummyData.totalMedicinesInStock}
             icon={faPills}
-            color="#feb117"
-            textColor="#ffffff"
-            iconColor="#ffffff"
+            color="#fff"
+            iconColor="#014d4e"
+            textColor="#014d4e"
           />
         </div>
       </div>

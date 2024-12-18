@@ -6,15 +6,15 @@ import DashboardPharmacy from './components/DashboardPharmacy';
 import MedicinesPharmacy from './components/MedicinesPharmacy';
 import NotificationsPharmacy from './components/NotificationsPharmacy';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import HomeWithDashboard from './components/HomeWithDashboard';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Navigate to="/home" />} />
-        <Route path="/home" element={<HomePharmacy />} />
+        <Route path="/home" element={<HomeWithDashboard />} />
         <Route path="/orders" element={<OrderPharmacy />} />
-        <Route path="/dashboard" element={<DashboardPharmacy />} />
         <Route path="/medicines" element={<MedicinesPharmacy />} />
         <Route path="/notifications" element={<NotificationsPharmacy />} />
       </Routes>

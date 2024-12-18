@@ -19,11 +19,6 @@ export const SideBarData = [
         link: '/orders'
     },
     {
-        title: 'Dashboard',
-        icon: <FontAwesomeIcon icon={faFlaskVial} />,
-        link: '/dashboard'
-    },
-    {
         title: 'Medicines',
         icon: <FontAwesomeIcon icon={faBriefcaseMedical} />,
         link: '/medicines'

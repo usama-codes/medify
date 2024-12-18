@@ -38,11 +38,11 @@ body {
 
 .main-container.sidebar-open .card-container {
   width: calc(100% - 275px); /* Adjusts width based on new margin */
-  gap: 100px;
+  gap: 70px;
 }
 
 .main-container.sidebar-open .content {
-  margin-left: 275px;
+  margin-left: 250px;
 }
 
 /* CONTENT AREA */
@@ -53,12 +53,13 @@ body {
   align-items: center; /* Centers child elements horizontally */
   padding: 20px;
   width: 100%;
+  margin-right: 40px;
 }
 
 .SideBar {
     height: 100%;
     width: 250px;
-    background-color: #0c0c19;
+    background-color: #014d4e;
     color: white;
     overflow-y: auto;
     position: fixed;
@@ -66,6 +67,7 @@ body {
     left: 0;
     transform: translateX(-100%);
     transition: transform 0.3s ease;
+    overflow-x: hidden;
     z-index: 2;
 }
 
@@ -94,7 +96,7 @@ body {
 }
 
 .SideBarList .row:hover {
-    background-color: #2a2a2a;
+    background-color: rgb(73, 95, 95);
     cursor: pointer;
     color: #90caf9;
     font-weight: bold;
@@ -107,7 +109,7 @@ img{
     padding-left: 35px;
 }
 .SideBarList #active {
-    background-color: #191a2e;
+    background-color: rgb(7, 183, 183);
 }
 
 .row #icon {
@@ -148,7 +150,7 @@ img{
     width: 100%; /* Make the input take up full width of the wrapper */
     padding: 5px 10px 5px 40px; /* Space for the icon */
     height: 45px;
-    border: 1px solid #747171;
+    border: 1px solid #014d4e;
     border-radius: 25px;
     font-size: 18px;
     font-family: Arial, sans-serif;
@@ -241,7 +243,7 @@ img{
 }
 
 .welcome-message {
-  color: #191a2e;
+  color: #014d4e;
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
@@ -263,7 +265,7 @@ img{
   display: flex;
   flex-wrap: wrap;
   gap: 40px;
-  justify-content: flex-start; /* Aligns cards to the start (left) */
+  justify-content: center; /* Aligns cards to the start (left) */
   align-items: flex-start; /* Aligns items to the top */
   margin-left: 100px; /* Default left margin */
   transition: margin-left 0.3s ease; /* Smooth transition */
@@ -271,7 +273,7 @@ img{
 }
 
 .card {
-  background-color: #1a84fe;
+  background-color: #57C3AD;
   color: #ffffff;
   width: 300px;
   height: 220px;
@@ -284,7 +286,7 @@ img{
   transition: margin-left 0.5s ease, width 0.5s ease, transform ease 0.4s;
   padding: 20px;
   margin-bottom: 20px;
-  box-shadow: 0 8px 8px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1); 
 }
 
 .card.chart-card {
@@ -295,7 +297,7 @@ img{
 
 .card:hover {
   transform: translateY(-10px);
-  box-shadow: 0 4px 20px rgba(70, 130, 180, 0.5);
+  box-shadow: 0 10px 20px rgba(70, 130, 180, 0.5);
 }
 
 .card-content { 
@@ -344,17 +346,34 @@ img{
 .profile-container {
   display: flex;
   margin-bottom: 20px;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.profile-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.notifications-section {
+  display: flex;
+  margin: 0 250px 0 0;
 }
 
 .notifications {
-  margin-left: 700px;
-  margin-top: 4px;
+  padding: 4px;
   cursor: pointer;
+  margin-top: -18px;
+  margin-right: -50px;
 }
 
 .notification-link {
   text-decoration: none;
   color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 /* Specific styles for the Pending Orders card */
@@ -412,14 +431,6 @@ img{
 .order-card p {
   font-size: 1em;
   margin: 5px 0;
-}
-
-.order-pharmacy .sideBar {
-  transform: translateX(-100%);
-}
-
-.order-pharmacy.sidebar-open .sideBar{
-  transform: translateX(0);
 }
 
 .order-pharmacy .header {
@@ -558,7 +569,7 @@ img{
 .search-bar-container input {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ccc;
+  border: px solid #014d4e;
   border-radius: 4px;
 }
 
@@ -668,7 +679,7 @@ img{
 
 .filter-select:focus {
   outline: none;
-  border-color: #1a84fe;
+  border-color: #014d4e;
 }
 
 .filter-button {
@@ -684,7 +695,7 @@ img{
 }
 
 .filter-button:hover {
-  color: #1a84fe;
+  color: #014d4e;
 }
 
 .filter-dropdown {
@@ -722,6 +733,44 @@ img{
   position: relative;
   width: 100%;
 }
+
+/* DASHBOARD */
+
+.dashboard-charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  row-gap: 20px;
+  column-gap: 30px;
+}
+
+.dashboard-charts-container .chart-card {
+  width: 500px;
+  height: 300px; 
+}
+
+.chart-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(1, 77, 78, 0.1);
+  transition: all 0.3s ease;
+  width: 400px;
+}
+
+.chart-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
+.chart-card h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-align: center;
+}
+
+
 
 @media (max-width: 768px) {
   .card-container {

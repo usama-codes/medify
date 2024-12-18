@@ -10,21 +10,14 @@ const barChartData = {
       label: '',
       data: [120, 150, 180, 100, 80],
       backgroundColor: [
-        '#f8295b', // Red
-        '#1a85ff', // Blue
-        '#7338ea', // Purple
-        '#f0c459', // Yellow
-        '#d80829', // Red
-      ],
-      borderColor: [
-        '#f8295b',
-        '#1a85ff',
-        '#7338ea',
-        '#f0c459',
-        '#d80829',
+        'rgba(0, 128, 128, 1)',
+        'rgb(15, 95, 95)', 
+        'rgb(0, 128, 128, 1)', 
+        'rgb(15, 95, 95)',
+        'rgba(0, 128, 128, 1)', 
       ],
       borderWidth: 1,
-      borderRadius: 15, // Rounding the bars
+      borderRadius: 10, // Rounding the bars
     },
   ],
 };
@@ -55,14 +48,6 @@ const barChartOptions = {
       grid: {
         display: false, // Remove grid lines on the Y-axis
       },
-    },
-  },
-  elements: {
-    bar: {
-      shadowOffsetX: 3,
-      shadowOffsetY: 3,
-      shadowColor: 'rgba(0, 0, 0, 0.1)', // Common shadow color
-      shadowBlur: 5,
     },
   },
 };

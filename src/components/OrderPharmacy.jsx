@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate} from "react-router-dom";
 import "../App.css";
 import SideBar from "./SideBar";
 import Card from "./Card";
@@ -47,7 +46,6 @@ const OrderPharmacy = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [filterType, setFilterType] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -232,8 +230,8 @@ const OrderPharmacy = () => {
     datasets: [
       {
         data: [orderStats.pending, orderStats.shipped, orderStats.canceled],
-        backgroundColor: ["#FF6A6A", "#4CAF50", "#FF9800"],
-        borderColor: ["#FF6A6A", "#4CAF50", "#FF9800"],
+        backgroundColor: ["#44a3a5", "#70c3c5", "#197274"],
+        borderColor: ["#44a3a5", "#70c3c5", "#197274"],
         borderWidth: 2,
       },
     ],
@@ -245,6 +243,17 @@ const OrderPharmacy = () => {
         position: "bottom",
       },
     },
+    interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false,
+          },
+    hover: {
+            onHover: function (e) {
+              const point = this.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
+              e.native.target.style.cursor = point.length ? 'pointer' : 'default';
+            },
+          },
     responsive: true,
     maintainAspectRatio: false,
   };
@@ -387,31 +396,35 @@ return (
               title="Total Orders"
               content={orderStats.totalOrders}
               icon={faShoppingCart}
-              color="#1a84fe"
+              color="#014d4e"
             />
             <Card
               title="Shipped Orders"
               content={orderStats.shipped}
               icon={faTruck}
-              color="#16c652"
+              color="#fff"
+              textColor="#014d4e"
+              iconColor="#014d4e"
             />
             <Card
               title="Canceled Orders"
               content={orderStats.canceled}
               icon={faTimesCircle}
-              color="#fe3c3d"
+              color="#014d4e"
             />
             <Card
               title="Pending Orders"
               content={orderStats.pending}
               icon={faTimesCircle}
-              color="#ffb017"
+              color="#fff"
+              textColor="#014d4e"
+              iconColor="#014d4e"
             />
             <Card
               title="Total Revenue"
               content={`$${orderStats.totalRevenue.toFixed(2)}`}
               icon={faDollarSign}
-              color="#f9285b"
+              color="#014d4e"
             />
           </div>
           <div className="charts-container">
