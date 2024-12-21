@@ -389,7 +389,7 @@ return (
             </table>
           </div>
       ) : (
-        // Display the default view when no search is active
+
         <>
           <div className="card-container">
             <Card

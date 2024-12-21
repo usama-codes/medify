@@ -5,6 +5,7 @@ import Card from "./Card";
 import ProfilePic from "./ProfilePic";
 import SideBar from "./SideBar";
 import { SidebarContext } from "./SideBarContext";
+import { NotificationContext } from "./NotificationsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen, faMoneyBillWave, faVials, faBell, faPills } from "@fortawesome/free-solid-svg-icons";
 import { faBell as faBellRegular } from "@fortawesome/free-regular-svg-icons"; // Import regular bell icon
@@ -13,7 +14,8 @@ function HomePharmacy() {
   const [greeting, setGreeting] = useState("");
   const [timeOfDay, setTimeOfDay] = useState("");
   const { isSideBarOpen } = useContext(SidebarContext);
-  const [isHovered, setIsHovered] = useState(false); // State to manage hover effect
+  const [isHovered, setIsHovered] = useState(false);
+  const { unreadCount } = useContext(NotificationContext);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -55,7 +57,7 @@ function HomePharmacy() {
           <div className="profile-section">
             <ProfilePic className="userProfile" />
           </div>
-          <div className="notifications-section">
+          <div className="notifications-section" style={{width: '50px', marginRight: '100px', position: 'relative'}}>
             <Link to="/notifications" className="notification-link">
               <FontAwesomeIcon
                 icon={isHovered ? faBell : faBellRegular}
@@ -64,6 +66,9 @@ function HomePharmacy() {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               />
+              {unreadCount > 0 && (
+                <span className="notification-badge">{unreadCount}</span>
+              )}
             </Link>
           </div>
         </div>
