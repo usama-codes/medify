@@ -647,11 +647,47 @@ img{
   margin-top: 20px;
 }
 
+.order-table input,
+.order-table select {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.order-table button {
+  margin: 0 4px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: #014d4e;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.order-table button:hover {
+  opacity: 0.9;
+}
+
 .order-table th,
 .order-table td {
   border: 1px solid #ddd;
   padding: 12px 15px;
   text-align: left;
+}
+
+.no-results {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+  width: 100%;
+}
+
+.no-results h2 {
+  color: #014d4e;
+  font-size: 1.5rem;
+  text-align: center;
 }
 
 /* Checkbox styles */

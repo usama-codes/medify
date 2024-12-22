@@ -46,6 +46,9 @@ const OrderPharmacy = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [filterType, setFilterType] = useState('all');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [editedOrder, setEditedOrder] = useState(null);
+  const [noResults, setNoResults] = useState(false);
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
@@ -70,6 +73,7 @@ const OrderPharmacy = () => {
     if (term.trim() === "") {
       setFilteredOrders([]);
       setSearchResults(false);
+      setNoResults(false);
       return;
     }
 
@@ -106,7 +110,8 @@ const OrderPharmacy = () => {
     }
 
   setFilteredOrders(filtered);
-  setSearchResults(filtered.length > 0);
+  setSearchResults(true);
+  setNoResults(filtered.length === 0);
 };
 
   const handleBack = () => {
@@ -130,13 +135,98 @@ const OrderPharmacy = () => {
   };
 
   const handleEdit = (orderId) => {
-    console.log("Edit order:", orderId);
-    // Add edit functionality
+  const orderToEdit = orders.find(order => order.id === orderId);
+  setEditingId(orderId);
+  setEditedOrder({...orderToEdit});
+};
+
+  const handleSave = () => {
+    const updatedOrders = orders.map(order => 
+      order.id === editingId ? editedOrder : order
+    );
+    setOrders(updatedOrders);
+    
+    // Update filtered orders if search is active
+    if (searchResults) {
+      setFilteredOrders(updatedOrders.filter(order => 
+        filteredOrders.some(fo => fo.id === order.id)
+      ));
+    }
+
+    // Recalculate order stats
+    const newStats = updatedOrders.reduce(
+      (acc, order) => {
+        acc.totalOrders++;
+        acc.totalRevenue += parseFloat(order.revenue);
+        if (order.status === "Pending") acc.pending++;
+        if (order.status === "Shipped") acc.shipped++;
+        if (order.status === "Canceled") acc.canceled++;
+        return acc;
+      },
+      {
+        totalOrders: 0,
+        pending: 0,
+        shipped: 0,
+        canceled: 0,
+        totalRevenue: 0,
+      }
+    );
+    
+    setOrderStats(newStats);
+    setEditingId(null);
+    setEditedOrder(null);
   };
 
   const handleDelete = (orderId) => {
-    console.log("Delete order:", orderId);
-    // Add delete functionality
+    // Confirm before deletion
+    if (!window.confirm('Are you sure you want to delete this order?')) {
+      return;
+    }
+
+    // Remove from orders
+    const updatedOrders = orders.filter(order => order.id !== orderId);
+    setOrders(updatedOrders);
+
+    // Update filtered orders if search is active
+    if (searchResults) {
+      setFilteredOrders(filteredOrders.filter(order => order.id !== orderId));
+    }
+
+  // Recalculate order stats
+  const newStats = updatedOrders.reduce(
+    (acc, order) => {
+      acc.totalOrders++;
+      acc.totalRevenue += parseFloat(order.revenue);
+      if (order.status === "Pending") acc.pending++;
+      if (order.status === "Shipped") acc.shipped++;
+      if (order.status === "Canceled") acc.canceled++;
+      return acc;
+    },
+    {
+      totalOrders: 0,
+      pending: 0,
+      shipped: 0,
+      canceled: 0,
+      totalRevenue: 0,
+    }
+  );
+  
+  setOrderStats(newStats);
+  
+  // Clear selection if deleted order was selected
+  setSelectedRows(prev => prev.filter(id => id !== orderId));
+};
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditedOrder(null);
+  };
+
+  const handleInputChange = (e, field) => {
+    setEditedOrder({
+      ...editedOrder,
+      [field]: e.target.value
+    });
   };
 
   const getPlaceholderText = () => {
@@ -224,7 +314,6 @@ const OrderPharmacy = () => {
     fetchOrders();
   }, []);
 
-  // Pie chart data
   const pieChartData = {
     labels: ["Pending", "Shipped", "Canceled"],
     datasets: [
@@ -331,6 +420,9 @@ return (
         </div>
       </div>
       {searchResults ? (
+        noResults ? (
+          <div className="no-results"><h2>No results found</h2></div>
+        ) : (
           <div className="table-container">
             <table className="order-table">
               <thead>
@@ -354,33 +446,94 @@ return (
               </thead>
               <tbody>
               {filteredOrders.map((order) => (
-                  <tr key={order.id}>
-                    <td className="checkbox-cell">
+                <tr key={order.id}>
+                  <td className="checkbox-cell">
+                    <input
+                      type="checkbox"
+                      className="order-checkbox"
+                      checked={selectedRows.includes(order.id)}
+                      onChange={() => handleCheckboxChange(order.id)}
+                    />
+                  </td>
+                  <td>{order.id}</td>
+                  <td>
+                    {editingId === order.id ? (
                       <input
-                        type="checkbox"
-                        className="order-checkbox"
-                        checked={selectedRows.includes(order.id)}
-                        onChange={() => handleCheckboxChange(order.id)}
+                        value={editedOrder.productName}
+                        onChange={(e) => handleInputChange(e, 'productName')}
                       />
+                    ) : (
+                      order.productName
+                    )}
                     </td>
-                    <td>{order.id}</td>
-                    <td>{order.productName}</td>
-                    <td>{order.customerName}</td>
-                    <td>{order.date}</td>
-                    <td>{order.status}</td>
-                    <td>${order.revenue.toFixed(2)}</td>
+                    <td>
+                      {editingId === order.id ? (
+                        <input
+                          value={editedOrder.customerName}
+                          onChange={(e) => handleInputChange(e, 'customerName')}
+                        />
+                      ) : (
+                        order.customerName
+                      )}
+                    </td>
+                    <td>
+                      {editingId === order.id ? (
+                        <input
+                          type="date"
+                          value={editedOrder.date}
+                          onChange={(e) => handleInputChange(e, 'date')}
+                        />
+                      ) : (
+                        order.date
+                      )}
+                    </td>
+                        <td>
+                      {editingId === order.id ? (
+                        <select
+                          value={editedOrder.status}
+                          onChange={(e) => handleInputChange(e, 'status')}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Shipped">Shipped</option>
+                          <option value="Canceled">Canceled</option>
+                        </select>
+                      ) : (
+                        order.status
+                      )}
+                    </td>
+                    <td>
+                      {editingId === order.id ? (
+                        <input
+                          type="number"
+                          value={editedOrder.revenue}
+                          onChange={(e) => handleInputChange(e, 'revenue')}
+                          step="0.01"
+                        />
+                      ) : (
+                        `$${order.revenue.toFixed(2)}`
+                      )}
+                    </td>
                     <td className="action-cell">
                       <div className="action-icons">
-                        <FontAwesomeIcon
-                          icon={faPencilAlt}
-                          className="action-icon edit-icon"
-                          onClick={() => handleEdit(order.id)}
-                        />
-                        <FontAwesomeIcon
-                          icon={faTrashAlt}
-                          className="action-icon delete-icon"
-                          onClick={() => handleDelete(order.id)}
-                        />
+                        {editingId === order.id ? (
+                          <>
+                            <button onClick={handleSave}>Save</button>
+                            <button onClick={handleCancel}>Cancel</button>
+                          </>
+                        ) : (
+                          <>
+                            <FontAwesomeIcon
+                              icon={faPencilAlt}
+                              className="action-icon edit-icon"
+                              onClick={() => handleEdit(order.id)}
+                            />
+                            <FontAwesomeIcon
+                              icon={faTrashAlt}
+                              className="action-icon delete-icon"
+                              onClick={() => handleDelete(order.id)}
+                            />
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -388,8 +541,8 @@ return (
               </tbody>
             </table>
           </div>
+        )
       ) : (
-
         <>
           <div className="card-container">
             <Card
