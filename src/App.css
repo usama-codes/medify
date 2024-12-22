@@ -221,7 +221,6 @@ img{
     border-radius: 50%;
     padding: 0;
     top: 20px;
-    right: 30px;
     position: absolute;
     object-fit: cover;
 }
@@ -433,17 +432,31 @@ img{
 
 .charts-container {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 20px;
   justify-content: space-between;
-  margin-left: 0;
+  align-items: flex-start;
+  height: 400px;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  margin: 2rem;
+  transition: all 0.3s ease;
+}
+
+.sidebar-open .charts-container {
+  flex-direction: column;
+  margin-left: 100px;
 }
 
 .charts-container .pie-chart,
-.charts-container .top-selling-products {
-  flex: 1 1 50%; /* Adjust the width of the charts */
-  min-width: 300px; /* Minimum width to ensure charts don't get too small */
-  max-width: 50%;
+.charts-container .bar-chart {
+  flex: 1; /* Adjust the width of the charts */
+  width: 100%;
+  height: 400px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-open .pie-chart,
+.sidebar-open .bar-chart {
+  width: calc(100% - 2rem);
 }
 
 .order-list {
@@ -494,7 +507,7 @@ img{
   overflow-x: hidden;
 }
 
-.order-pharmacy.sidebar-open {
+.card-container.sidebar-open {
   height: 100vh;
   width: 250px; /* Set a fixed width for the sidebar */
   position: fixed;
@@ -504,17 +517,6 @@ img{
   z-index: 1; /* Ensure the sidebar is above other elements */
 }
 
-.order-pharmacy.sidebar-open .main-content {
-  margin-left: 275px; /* Adjust based on the sidebar width */
-  width: calc(100% - 275px); /* Adjust based on the sidebar width */
-}
-
-.order-pharmacy.sidebar-open .order-stats {
-  width: calc(100% - 275px); /* Adjust based on the sidebar width */
-  margin-left: 100px;
-  gap: 20px 100px;
-  justify-content: center;
-}
 
 .order-pharmacy .header {
   display: flex;
@@ -528,13 +530,7 @@ img{
   margin-top: 30px;
 }
 
-.order-pharmacy {
-  padding: 0;
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  height: 100vh;
-}
+
 
 .order-stats {
   display: flex;
@@ -556,6 +552,10 @@ img{
   margin-top: -20px;
 }
 
+.searchInputWrapper.sidebar-open {
+  margin-left: 70px;
+}
+
 .pie-chart {
   margin-bottom: 40px;
   margin-top: 50px;
@@ -571,9 +571,10 @@ img{
 }
 
 .barChart {
-  height: 400px;
+  height: 100%;
   width: 500px;
   padding: 10px;
+  margin-top: 2rem;
 }
 
 .order-list {

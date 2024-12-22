@@ -424,7 +424,7 @@ return (
           <div className="no-results"><h2>No results found</h2></div>
         ) : (
           <div className="table-container">
-            <table className="order-table">
+            <table className="table">
               <thead>
                 <tr>
                   <th className="checkbox-cell">

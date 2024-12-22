@@ -48,6 +48,7 @@ const barChartOptions = {
       grid: {
         display: false, // Remove grid lines on the Y-axis
       },
+      suggestedMax: 100,
     },
   },
 };

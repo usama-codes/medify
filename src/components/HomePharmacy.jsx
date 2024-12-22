@@ -2,13 +2,13 @@ import "../App.css";
 import React, { useState, useEffect, useContext } from "react";
 import { Link } from "react-router-dom";
 import Card from "./Card";
-import ProfilePic from "./ProfilePic";
+import Username from "./Username";
 import SideBar from "./SideBar";
 import { SidebarContext } from "./SideBarContext";
 import { NotificationContext } from "./NotificationsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen, faMoneyBillWave, faVials, faBell, faPills } from "@fortawesome/free-solid-svg-icons";
-import { faBell as faBellRegular } from "@fortawesome/free-regular-svg-icons"; // Import regular bell icon
+import { faBell as faBellRegular } from "@fortawesome/free-regular-svg-icons"; 
 
 function HomePharmacy() {
   const [greeting, setGreeting] = useState("");
@@ -55,7 +55,7 @@ function HomePharmacy() {
       <div className="content">
         <div className="profile-container">
           <div className="profile-section">
-            <ProfilePic className="userProfile" />
+            <Username className="userProfile" />
           </div>
           <div className="notifications-section" style={{width: '50px', marginRight: '100px', position: 'relative'}}>
             <Link to="/notifications" className="notification-link">
