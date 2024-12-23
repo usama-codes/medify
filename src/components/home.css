@@ -1,0 +1,309 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  box-sizing: border-box;
+ /* Ensure the body takes up the full height of the viewport */
+
+}
+
+.header {
+  height: 100vh; 
+  width: 100vw;
+  overflow-y: auto; 
+  scroll-behavior: smooth;   
+}
+
+.header .top-header {
+  max-width: 100%;
+  display: flex;
+  padding: 10px 10px;
+  background: #f6f7f8;
+}
+
+.header .top-header .icon {
+  margin-left: 20px;
+  color: #ababab;
+  font-size: 19px;
+}
+
+.header .top-header .info {
+  color: #8a8a8a;
+}
+
+/* Mid Header Styles */
+.header .mid-header {
+  display: flex;
+  padding: 20px 40px;
+  max-width: 100%;
+  justify-content: space-between;
+}
+
+.header .mid-header .logo img{
+  height: 45px;
+  width: 175px;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.header .mid-header .user {
+  display: flex;
+  margin-right: 30px;
+}
+
+.header .mid-header .user .button button {
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background: none;
+  cursor: pointer;
+}
+
+/* Last Header Styles */
+.header .last-header {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  background: #014D4E;
+  justify-content: space-between;
+  align-items: center; /* Center content vertically */
+}
+
+.header .last-header .user-profile {
+  display: flex;
+  align-items: center; /* Vertically align icon and text */
+  margin-top: 10px;
+}
+
+.header .last-header .user-profile .icon {
+  padding: 10px;
+  background: #fff;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+
+
+.header .last-header .user-profile  h2 {
+  color: #fff;
+  font-size: 18px;
+}
+
+
+
+/* Navigation Styling */
+.header .last-header .nav {
+  display: flex;
+  justify-content: center; /* Center the navigation links */
+  flex-grow: 1; /* Allow it to take up available space */
+}
+
+.header .last-header .nav ul {
+  display: flex;
+  gap: 20px; /* Space between list items */
+}
+
+.header .last-header .nav ul li {
+  list-style: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.header .last-header .nav ul li:hover {
+  color:#fed700; /* Change color on hover */
+}
+/* Trending Section */
+.header .trending {
+  padding: 20px 30px;
+  width: 100%;
+}
+
+.header .trending .container {
+  max-width: 100%;
+  padding: 10px 20px;
+  display: flex;
+}
+
+.header .trending .container .header2 {
+  display: flex; /* Make this a flex container */
+  justify-content: space-between; /* Push h2 and h3 to opposite ends */
+  width: 100%; /* Ensure the header2 takes full width */
+}
+
+.header .trending .container .header2 .heading {
+  flex-grow: 1; /* Ensure the heading takes as much space as needed */
+}
+
+.header .trending .container .header2 .cate {
+  display: flex; /* To align the h3 tags in a row */
+  gap: 20px; /* Space between the h3 elements */
+  align-items: center; /* Center h3 vertically if needed */
+}
+
+.header .trending .container .header2 h2 {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #232323;
+ 
+}
+.header .trending .container .header2 .cate{
+  display: flex;
+  margin-top: 5px
+}
+
+.header .trending .container .header2 h3 {
+  font-size: 18px;
+  color: #232323;
+  cursor: pointer; /* Make h3 items clickable if needed */
+}
+
+.header .trending .container .header2 h3:hover {
+  color: #fed700; /* Hover effect on h3 items */
+}
+.products{
+  max-width: 100%;
+  
+
+}
+.products .container{
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content:center;
+}
+.header .featured-selling {
+  padding: 20px 30px;
+  width: 100%;
+}
+
+.header .featured-selling .container {
+  max-width: 100%;
+  padding: 10px 20px;
+  display: flex;
+}
+
+.header .featured-selling .container .header2 {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.header .featured-selling .container .header2 .heading {
+  flex-grow: 1;
+}
+
+.header .featured-selling .container .header2 h2 {
+  font-size: 16px;
+  text-transform: uppercase;
+  color: #232323;
+}
+
+.products .container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+/* About and Contact Us Section */
+/* About and Contact Us Section */
+.header .about-contact {
+  padding: 30px 40px;
+  background-color: #014D4E; /* Black background */
+  color: #fff; /* White text color */
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.header .about-contact .about-us,
+.header .about-contact .contact-us {
+  width: 48%;
+}
+
+.header .about-contact h2 {
+  font-size: 24px;
+  color: #fff; /* White color for the headings */
+  margin-bottom: 10px;
+}
+
+.header .about-contact p {
+  font-size: 16px;
+  color: #fff; /* White color for the text */
+  line-height: 1.6;
+}
+
+.header .about-contact ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.header .about-contact ul li {
+  font-size: 16px;
+  color: #fff; /* White color for the list items */
+}
+
+.header .about-contact ul li a {
+  color: #fff; /* White color for the links */
+  text-decoration: none;
+}
+
+.header .about-contact ul li a:hover {
+  color: #fed700; /* Yellow color when hovered */
+}
+
+.header .about-contact .contact-us ul {
+  padding-left: 0;
+}
+
+.user .button {
+  height: 50px;
+  width: 50px;
+  text-align: center;
+  font-size: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #fff;
+  background-color: #014D4E;
+  padding: 10px 3px 10px 9px;
+  border: 1px solid #014D4E ;
+}
+
+.medicine-item {
+  border: 1px solid #ccc;
+  padding: 16px;
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.medicine-item h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #333;
+}
+
+.medicine-item p {
+  margin: 5px 0;
+  color: #555;
+}
+
+.medicine-item button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.medicine-item button:hover {
+  background-color: #0056b3;
+}
+

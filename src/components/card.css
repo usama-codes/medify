@@ -1,0 +1,87 @@
+/* Center the card on the page */
+.card-container {
+  display: flex;
+  margin: 20px;
+  justify-content: center;
+}
+
+/* Card Design */
+.card {
+  width: 260px; /* Adjusted card width */
+  padding: 15px;
+  border-radius: 15px;
+  overflow: hidden;
+  text-align: center;
+  background-color: #fff;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05); /* Zoom effect on hover */
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Image */
+.card-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Remove Hover Overlay */
+.card-hover-overlay {
+  display: none; /* Removed hover overlay */
+}
+
+/* Permanent Buy Now Button */
+.card-buttons {
+  margin-top: 12px;
+}
+
+.btn {
+  background-color: #014D4E; /* Button color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  width: 100%; /* Full-width button */
+}
+
+.btn:hover {
+  background-color: #013839; /* Darker shade on hover */
+}
+
+/* Card Information */
+.card-info {
+  margin-top: 15px;
+  font-family: Arial, sans-serif;
+  text-align: left;
+}
+
+.card-name,
+.card-quantity,
+.card-category,
+.card-price {
+  margin: 8px 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #014D4E;
+}
+
+.card-name span,
+.card-quantity span,
+.card-category span,
+.card-price span {
+  font-weight: normal;
+  color: #555;
+}

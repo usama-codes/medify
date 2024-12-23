@@ -1,0 +1,119 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+.cart{
+    width: 100%;
+    padding: 20px 30px;
+
+}
+ .cart h3{
+    font-size: 32 px;
+    text-transform: uppercase;
+    color: #014D4E;
+    letter-spacing: 1px;
+    font-weight: 300;
+ }
+
+
+
+ /* breakkkkkkkkkkkkkkkkkkkkkkkkkk */
+ .cart .container{
+    max-width: 100%;
+    padding: 10px 20px;
+ }
+ .cart .container .box{
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #f6f6f6;
+    height: 250px;
+    margin-top: 10px;
+ }
+ .cart .container .box .img-box img{
+    margin-top:      50px;
+    width: 200px;
+    height: 200px;
+
+ }
+ .cart .container .box .detail{
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+    margin-left: 30px;
+ }
+ .cart .container .box .detail .info{
+    margin-top: 40px;
+    margin-left: 30px;
+ }
+ .cart .container .box .detail .info h4{
+    text-transform: uppercase;
+    font-size: 14px;
+    color: #8a8a8a;
+
+ }
+ .cart .container .box .detail .info h3{
+    margin-top: 10px;
+    color: #014D4E;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600px;
+ }
+ .cart .container .box .detail .info p{
+    margin-top: 10px;
+    color: #232323;
+    text-transform: uppercase;
+ }
+ .cart .container .box .detail .quantity{
+    margin-top: 65px;
+    margin-left: 30px;
+
+ }
+ .cart .container .box .detail .quantity button .btn{
+   margin: 5px;
+   border-radius: 0;
+    padding: 6px 10px;
+    color: #fff;
+    outline: none;
+    background: #014D4E;
+    font-weight: 600;
+    height: 36 px;
+    font-size: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    
+ }
+ .cart .container .box .detail .quantity input{
+   border-radius: 5px;
+    height: 36x;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    outline: none;
+    border: 2px solid #014D4E;
+    color:#014D4E;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100px;
+    text-align: center;
+ }
+ .cart .container .box .detail .icon{
+    margin-top: 70px;
+    margin-left: 40px;
+ }
+ .cart .container .box .detail .icon li{
+    list-style: none;
+    background: #014D4E;
+    padding: 10px 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+ }
+ .cart .container .box .detail .info h3, 
+.cart .container .box .detail .info h4 {
+    margin-bottom: 15px; /* Adjust the gap between the elements */
+}   
