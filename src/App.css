@@ -227,7 +227,7 @@ img{
 
 .username {
     top: 30px;
-    right: 100px;
+    right: 80px;
     position: absolute;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     color: #595958;
@@ -673,8 +673,14 @@ img{
 .order-table th,
 .order-table td {
   border: 1px solid #ddd;
-  padding: 12px 15px;
+  padding: 20px 15px;
   text-align: left;
+}
+
+.table {
+  border-spacing: 15px 15px;  /* Add space between rows */
+  border-collapse: separate;
+  width: 100%;
 }
 
 .no-results {
