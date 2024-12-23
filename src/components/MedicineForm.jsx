@@ -1,25 +1,32 @@
-import React, { useState } from 'react';
-import '../App.css';
+import { useState, useEffect } from "react";
+import axios from "axios";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faUpload, 
-  faCheckCircle, 
-  faExclamationCircle, 
-  faPills,
-} from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faExclamationCircle, faPills } from '@fortawesome/free-solid-svg-icons';
 
-function AddMedicineForm() {
+function MedicineForm({ addMedicine, updateMedicine, medicine, closeForm }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     category: '',
     price: '',
-    photo: null,
+    image: null,
   });
 
   const [errors, setErrors] = useState({});
-  const [photoPreview, setPhotoPreview] = useState(null);
-  const [bulkFile, setBulkFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  useEffect(() => {
+    if (medicine) {
+      setFormData({
+        name: medicine.name || '',
+        description: medicine.description || '',
+        category: medicine.category || '',
+        price: medicine.price || '',
+        image: null, // Optionally update image if required
+      });
+      setImagePreview(medicine.image_url || null); // Set preview if the medicine has an image URL
+    }
+  }, [medicine]);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -32,14 +39,9 @@ function AddMedicineForm() {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFormData({ ...formData, photo: file });
-      setPhotoPreview(URL.createObjectURL(file));
+      setFormData({ ...formData, image: file });
+      setImagePreview(URL.createObjectURL(file));
     }
-  };
-
-  const handleBulkFileChange = (event) => {
-    const file = event.target.files[0];
-    setBulkFile(file);
   };
 
   const validateForm = () => {
@@ -48,52 +50,49 @@ function AddMedicineForm() {
     if (!formData.category) newErrors.category = 'Please select a category.';
     if (!formData.description.trim()) newErrors.description = 'Description is required.';
     if (!formData.price || formData.price <= 0) newErrors.price = 'Price must not be empty or negative.';
-    if (!formData.photo) newErrors.photo = 'Please upload a photo.';
+    if (!formData.image && !medicine) newErrors.image = 'Please upload a photo.';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      console.log('Form submitted:', formData);
-      alert('Medicine added successfully!');
-      // Reset form
-      setFormData({
-        name: '',
-        description: '',
-        category: '',
-        price: '',
-        photo: null,
-      });
-      setPhotoPreview(null);
-      setErrors({});
+      try {
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', formData.name);
+        formDataToSend.append('description', formData.description);
+        formDataToSend.append('category', formData.category);
+        formDataToSend.append('price', formData.price);
+        formDataToSend.append('image', formData.image);
+
+        if (medicine) {
+          // Editing an existing medicine
+          await updateMedicine({ ...formData, medicine_id: medicine.medicine_id });
+        } else {
+          // Adding a new medicine
+          await addMedicine(formDataToSend);
+        }
+
+        closeForm(); // Close the form after submission
+      } catch (error) {
+        console.error("Error submitting form:", error);
+        alert('Error while saving the medicine.');
+      }
     }
   };
-
-  const handleBulkImport = () => {
-    if (bulkFile) {
-      console.log('Bulk file uploaded:', bulkFile);
-      alert('Bulk import in progress!');
-      // Add your bulk processing logic here
-    } else {
-      alert('Please upload a file for bulk import.');
-    }
-
-  };
-
 
   return (
     <form className="custom-form" onSubmit={handleSubmit}>
       <h1 className='form-header'>
         <FontAwesomeIcon icon={faPills} className='header-icon' />
-        Add New Medicine</h1>
+        {medicine ? 'Edit Medicine' : 'Add New Medicine'}
+      </h1>
       <div className="form-content">
         <div className="form-card">
+          {/* Form Fields */}
           <div className="custom-form-group">
-            <label htmlFor="nameInput" className="custom-label">
-              Name:
-            </label>
+            <label htmlFor="nameInput" className="custom-label">Name:</label>
             <input
               type="text"
               id="nameInput"
@@ -102,17 +101,11 @@ function AddMedicineForm() {
               onChange={handleChange}
               className={`custom-input ${errors.name ? 'error-input' : ''}`}
             />
-            {errors.name && (
-              <span className="error-text">
-                <FontAwesomeIcon icon={faExclamationCircle} /> {errors.name}
-              </span>
-            )}
+            {errors.name && <span className="error-text"><FontAwesomeIcon icon={faExclamationCircle} /> {errors.name}</span>}
           </div>
 
           <div className="custom-form-group">
-            <label htmlFor="descriptionInput" className="custom-label">
-              Description:
-            </label>
+            <label htmlFor="descriptionInput" className="custom-label">Description:</label>
             <textarea
               id="descriptionInput"
               name="description"
@@ -122,17 +115,11 @@ function AddMedicineForm() {
               rows="5"
               style={{ overflowY: 'scroll', resize: 'none' }}
             />
-            {errors.description && (
-              <span className="error-text">
-                <FontAwesomeIcon icon={faExclamationCircle} /> {errors.description}
-              </span>
-            )}
+            {errors.description && <span className="error-text"><FontAwesomeIcon icon={faExclamationCircle} /> {errors.description}</span>}
           </div>
 
           <div className="custom-form-group">
-            <label htmlFor="categoryInput" className="custom-label">
-              Category:
-            </label>
+            <label htmlFor="categoryInput" className="custom-label">Category:</label>
             <select
               id="categoryInput"
               name="category"
@@ -141,28 +128,22 @@ function AddMedicineForm() {
               className={`custom-input ${errors.category ? 'error-input' : ''}`}
             >
               <option value="">Select a category</option>
-              <option value='Anti-biotic'>Anti-biotic</option>
-              <option value='Anti-septics'>Anti-septics</option>
-              <option value='Anti-diabetic'>Anti-diabetic</option>
-              <option value='Pain Killer'>Pain Killer</option>
-              <option value='Homeopaethic'>Homeopaethic</option>
-              <option value='Cardiovascular'>Cardiovascular</option>
-              <option value='Sedatives'>Sedatives</option>
-              <option value='Laxatives'>Laxatives</option>
-              <option value='Vaccines'>Vaccines</option>
-              <option value='Other'>Other</option>
+              <option value="Anti-biotic">Anti-biotic</option>
+              <option value="Anti-septics">Anti-septics</option>
+              <option value="Anti-diabetic">Anti-diabetic</option>
+              <option value="Pain Killer">Pain Killer</option>
+              <option value="Homeopaethic">Homeopaethic</option>
+              <option value="Cardiovascular">Cardiovascular</option>
+              <option value="Sedatives">Sedatives</option>
+              <option value="Laxatives">Laxatives</option>
+              <option value="Vaccines">Vaccines</option>
+              <option value="Other">Other</option>
             </select>
-            {errors.category && (
-              <span className="error-text">
-                <FontAwesomeIcon icon={faExclamationCircle} /> {errors.category}
-              </span>
-            )}
+            {errors.category && <span className="error-text"><FontAwesomeIcon icon={faExclamationCircle} /> {errors.category}</span>}
           </div>
 
           <div className="custom-form-group">
-            <label htmlFor="priceInput" className="custom-label">
-              Price:
-            </label>
+            <label htmlFor="priceInput" className="custom-label">Price:</label>
             <input
               type="number"
               id="priceInput"
@@ -171,57 +152,26 @@ function AddMedicineForm() {
               onChange={handleChange}
               className={`custom-input ${errors.price ? 'error-input' : ''}`}
             />
-            {errors.price && (
-              <span className="error-text">
-                <FontAwesomeIcon icon={faExclamationCircle} /> {errors.price}
-              </span>
-            )}
+            {errors.price && <span className="error-text"><FontAwesomeIcon icon={faExclamationCircle} /> {errors.price}</span>}
           </div>
 
           <div className="custom-form-group">
-            <label htmlFor="photoInput" className="custom-label">
-              Upload Photo:
-            </label>
+            <label htmlFor="photoInput" className="custom-label">Upload Photo:</label>
             <input
               type="file"
               id="photoInput"
-              name="photo"
+              name="image"
               accept="image/*"
               onChange={handleFileChange}
               className="custom-input"
             />
-            {photoPreview && <img src={photoPreview} alt="Preview" className="photo-preview" />}
-            {errors.photo && (
-              <span className="error-text">
-                <FontAwesomeIcon icon={faExclamationCircle} /> {errors.photo}
-              </span>
-            )}
-          </div>
-
-          <div className="custom-form-group optional-section">
-            <label htmlFor="bulkInput" className="custom-label optional-label">
-              Bulk Import (Optional):
-            </label>
-            <input
-              type="file"
-              id="bulkInput"
-              name="bulkFile"
-              accept=".csv"
-              onChange={handleBulkFileChange}
-              className="custom-input optional-input"
-            />
-            <button
-              type="button"
-              className="custom-submit-button optional-button"
-              onClick={handleBulkImport}
-            >
-              <FontAwesomeIcon icon={faUpload} /> Bulk Import
-            </button>
+            {imagePreview && <img src={imagePreview} alt="Preview" className="photo-preview" />}
+            {errors.image && <span className="error-text"><FontAwesomeIcon icon={faExclamationCircle} /> {errors.image}</span>}
           </div>
 
           <div className="button-container">
             <button type="submit" className="custom-submit-button">
-              <FontAwesomeIcon icon={faCheckCircle} /> Add Medicine
+              <FontAwesomeIcon icon={faCheckCircle} /> {medicine ? 'Update Medicine' : 'Add Medicine'}
             </button>
           </div>
         </div>
@@ -230,4 +180,4 @@ function AddMedicineForm() {
   );
 }
 
-export default AddMedicineForm;
+export default MedicineForm;

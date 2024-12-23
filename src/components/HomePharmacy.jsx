@@ -1,21 +1,45 @@
 import "../App.css";
 import React, { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Card from "./Card";
-import Username from "./Username";
+import ProfilePic from "./ProfilePic";
 import SideBar from "./SideBar";
 import { SidebarContext } from "./SideBarContext";
-import { NotificationContext } from "./NotificationsContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBoxOpen, faMoneyBillWave, faVials, faBell, faPills } from "@fortawesome/free-solid-svg-icons";
-import { faBell as faBellRegular } from "@fortawesome/free-regular-svg-icons"; 
+import { faBell as faBellRegular } from "@fortawesome/free-regular-svg-icons";
+import axios from "axios";
 
 function HomePharmacy() {
   const [greeting, setGreeting] = useState("");
   const [timeOfDay, setTimeOfDay] = useState("");
   const { isSideBarOpen } = useContext(SidebarContext);
   const [isHovered, setIsHovered] = useState(false);
-  const { unreadCount } = useContext(NotificationContext);
+
+  // State variables for API data
+  const [pendingOrders, setPendingOrders] = useState(null);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(null);
+  const [ordersCompletedToday, setOrdersCompletedToday] = useState(null);
+  const [revenueGeneratedToday, setRevenueGeneratedToday] = useState(null);
+  const [topSellingDrug, setTopSellingDrug] = useState(null);
+  const [totalMedicinesInStock, setTotalMedicinesInStock] = useState(null);
+
+  // Get token from URL
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const token = urlParams.get("token");
+
+    if (token) {
+      // Save token to local storage
+      localStorage.setItem("authToken", token);
+      // Remove token from URL by reloading without query params
+      window.history.replaceState({}, document.title, window.location.pathname);
+      // Reload page
+      window.location.reload();
+    }
+  }, [location]);
 
   useEffect(() => {
     const currentHour = new Date().getHours();
@@ -37,17 +61,79 @@ function HomePharmacy() {
     setTimeOfDay(className);
   }, []);
 
-  // Dummy data for cards
-  const dummyData = {
-    pendingOrders: 578,
-    lowStockDrugs: 2,
-    urgentNotifications: 3,
-    monthlyRevenue: 1200,
-    ordersCompletedToday: 10,
-    revenueGeneratedToday: 500,
-    topSellingDrug: "Aspirin",
-    totalMedicinesInStock: 150,
-  };
+  // Fetch data from APIs with token using Axios
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      console.error("No auth token found in local storage");
+      return;
+    }
+
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const fetchPendingOrders = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/pharmacy/pending-count", { headers });
+        setPendingOrders(data.pendingOrderCount);
+      } catch (error) {
+        console.error("Error fetching pending orders:", error);
+      }
+    };
+
+    const fetchMonthlyRevenue = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/pharmacy/monthly-revenue", { headers });
+        setMonthlyRevenue(data.total);
+      } catch (error) {
+        console.error("Error fetching monthly revenue:", error);
+      }
+    };
+
+    const fetchOrdersCompletedToday = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/pharmacy/complete-orders", { headers });
+        setOrdersCompletedToday(data.completedOrdersCount);
+      } catch (error) {
+        console.error("Error fetching orders completed today:", error);
+      }
+    };
+
+    const fetchRevenueGeneratedToday = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/pharmacy/today-revenue", { headers });
+        setRevenueGeneratedToday(data.todaysRevenue);
+      } catch (error) {
+        console.error("Error fetching today's revenue:", error);
+      }
+    };
+
+    const fetchTopSellingDrug = async () => {
+      try {
+        const { data } = await axios.get("http://localhost:4000/api/pharmacy/top-selling-drug", { headers });
+        setTopSellingDrug(data.name);
+      } catch (error) {
+        console.error("Error fetching top-selling drug:", error);
+      }
+    };
+
+    const fetchTotalMedicinesInStock = async () => {
+      try {
+        const { data } = await axios.get("/api/totalMedicinesInStock", { headers });
+        setTotalMedicinesInStock(data.count);
+      } catch (error) {
+        console.error("Error fetching total medicines in stock:", error);
+      }
+    };
+
+    // Call all fetch functions
+    fetchPendingOrders();
+    fetchMonthlyRevenue();
+    fetchOrdersCompletedToday();
+    fetchRevenueGeneratedToday();
+    fetchTopSellingDrug();
+    fetchTotalMedicinesInStock();
+  }, []);
 
   return (
     <div className={`main-container ${isSideBarOpen ? "sidebar-open" : ""}`}>
@@ -55,9 +141,9 @@ function HomePharmacy() {
       <div className="content">
         <div className="profile-container">
           <div className="profile-section">
-            <Username className="userProfile" />
+            <ProfilePic className="userProfile" />
           </div>
-          <div className="notifications-section" style={{width: '50px', marginRight: '100px', position: 'relative'}}>
+          <div className="notifications-section">
             <Link to="/notifications" className="notification-link">
               <FontAwesomeIcon
                 icon={isHovered ? faBell : faBellRegular}
@@ -66,9 +152,6 @@ function HomePharmacy() {
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
               />
-              {unreadCount > 0 && (
-                <span className="notification-badge">{unreadCount}</span>
-              )}
             </Link>
           </div>
         </div>
@@ -82,7 +165,7 @@ function HomePharmacy() {
         <div className="card-container">
           <Card
             title="Pending Orders"
-            content={dummyData.pendingOrders}
+            content={pendingOrders !== null ? pendingOrders : "Loading..."}
             icon={faBoxOpen}
             color="#014d4e"
             iconColor="#fff"
@@ -90,7 +173,7 @@ function HomePharmacy() {
           />
           <Card
             title="Monthly Revenue"
-            content={dummyData.monthlyRevenue}
+            content={monthlyRevenue !== null ? `$${monthlyRevenue}` : "Loading..."}
             icon={faMoneyBillWave}
             color="#fff"
             iconColor="#014d4e"
@@ -98,7 +181,7 @@ function HomePharmacy() {
           />
           <Card
             title="Orders Completed"
-            content={dummyData.ordersCompletedToday}
+            content={ordersCompletedToday !== null ? ordersCompletedToday : "Loading..."}
             icon={faBoxOpen}
             color="#014d4e"
             iconColor="#fff"
@@ -106,7 +189,7 @@ function HomePharmacy() {
           />
           <Card
             title="Today's Revenue"
-            content={dummyData.revenueGeneratedToday}
+            content={revenueGeneratedToday !== null ? `$${revenueGeneratedToday}` : "Loading..."}
             icon={faMoneyBillWave}
             color="#fff"
             iconColor="#014d4e"
@@ -114,7 +197,7 @@ function HomePharmacy() {
           />
           <Card
             title="Top-Selling Drug"
-            content={dummyData.topSellingDrug}
+            content={topSellingDrug !== null ? topSellingDrug : "Loading..."}
             icon={faVials}
             color="#014d4e"
             iconColor="#fff"
@@ -122,7 +205,7 @@ function HomePharmacy() {
           />
           <Card
             title="Total Medicines"
-            content={dummyData.totalMedicinesInStock}
+            content={totalMedicinesInStock !== null ? totalMedicinesInStock : "Loading..."}
             icon={faPills}
             color="#fff"
             iconColor="#014d4e"

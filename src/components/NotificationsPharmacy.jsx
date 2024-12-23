@@ -1,75 +1,111 @@
-import { useState, useContext } from 'react';
+import { useState, useContext } from "react";
 import { SidebarContext } from "./SideBarContext";
-import { NotificationContext } from './NotificationsContext';
+import { NotificationContext } from "./NotificationsContext";
 import SideBar from "./SideBar";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch, faBell, faPills, faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch, faBell, faPills, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 
 const TabButton = ({ active, label, icon, onClick }) => (
-  <button 
-    className={`tab-button ${active ? 'active' : ''}`}
-    onClick={onClick}
-  >
+  <button className={`tab-button ${active ? "active" : ""}`} onClick={onClick}>
     <FontAwesomeIcon icon={icon} />
     <span>{label}</span>
   </button>
 );
 
-const NotificationCard = ({ id, type, message, time, isRead }) => {
-  const { markAsRead } = useContext(NotificationContext);
-  const [isHovered, setIsHovered] = useState(false);
-
+const NotificationCard = ({ id, order_id, message, time, isRead, onFetchOrderDetails }) => {
   const handleClick = () => {
-    console.log('Card clicked, isRead:', isRead);
-    console.log('Notification ID:', id);
-    if (!isRead) {
-      markAsRead(id);
+    if (!isRead && onFetchOrderDetails) {
+      onFetchOrderDetails(order_id); // Fetch order details on click
     }
   };
 
   return (
-    <div 
-    className={`notification-card ${isRead ? 'read' : 'unread'}`}
-    onClick={handleClick}
-    onMouseEnter={() => setIsHovered(true)}
-    onMouseLeave={() => setIsHovered(false)}>
-
-    {console.log('Rendering card:', id, 'isRead:', isRead)}
-      <div className={`indicator ${type}`}>
-        <FontAwesomeIcon 
-          icon={
-            type === 'orders' ? faBell :
-            type === 'inventory' ? faPills :
-            faExclamationCircle
-          }
-          className="notification-icon" 
-        />
+    <div
+      className={`notification-card ${isRead ? "read" : "unread"}`}
+      onClick={handleClick}
+    >
+      <div className="indicator">
+        <FontAwesomeIcon icon={faBell} className="notification-icon" />
       </div>
       <div className="notification-content">
         <div className="message-header">
           <p className="message">{message}</p>
-          <span className="time">{time}</span>
+          <span className="time">{new Date(time).toLocaleString()}</span> {/* Format the time */}
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 
-function NotificationsPharmacy() {
+const NotificationsPharmacy = () => {
   const { isSideBarOpen } = useContext(SidebarContext);
   const { notifications } = useContext(NotificationContext);
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const tabs = [
-    { id: 'all', label: 'All', icon: faBell },
-    { id: 'orders', label: 'Orders', icon: faBell },
-    { id: 'inventory', label: 'Inventory', icon: faPills },
-    { id: 'system', label: 'System', icon: faExclamationCircle }
+  const fetchOrderDetails = async (orderId) => {
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`http://localhost:4000/api/notification/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch order details");
+      }
+      const data = await response.json();
+      console.log("Order details:", data);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+    }
+  };
+
+  // Dummy data for system and inventory notifications
+
+  const dummyData = [
+    {
+      notification_: "inv-1",
+      notification_msg: "Inventory running low for Paracetamol",
+      created_at: new Date().toISOString(),
+      type: "inventory",
+      is_read: false,
+    },
+    {
+      notification_: "inv-2",
+      notification_msg: "New stock added for Aspirin",
+      created_at: new Date().toISOString(),
+      type: "inventory",
+      is_read: true,
+    },
+    {
+      notification_: "sys-1",
+      notification_msg: "System maintenance scheduled for tomorrow",
+      created_at: new Date().toISOString(),
+      type: "system",
+      is_read: false,
+    },
+    {
+      notification_: "sys-2",
+      notification_msg: "New feature update released!",
+      created_at: new Date().toISOString(),
+      type: "system",
+      is_read: true,
+    },
   ];
 
+  const filteredNotifications = [...dummyData,...notifications].map((elm) => {
+    if(elm.notification_msg.split(" ").includes("order")) return {...elm, type:"orders"};
+    else return elm;
+  }).filter((notification) => {
+    if(activeTab === 'all') return true;
+    else return activeTab === notification.type
+  })
+
+  console.log("Filtered Notifications:", filteredNotifications);
+
   return (
-    <div className={`notifications-wrapper ${isSideBarOpen ? 'sidebar-open' : ''}`}>
+    <div className={`notifications-wrapper ${isSideBarOpen ? "sidebar-open" : ""}`}>
       <SideBar />
       <div className="notifications-container">
         <header className="notifications-header">
@@ -85,7 +121,12 @@ function NotificationsPharmacy() {
         </header>
 
         <div className="tabs-container">
-          {tabs.map(tab => (
+          {[
+            { id: "all", label: "All", icon: faBell },
+            { id: "orders", label: "Orders", icon: faBell },
+            { id: "inventory", label: "Inventory", icon: faPills },
+            { id: "system", label: "System", icon: faExclamationCircle },
+          ].map((tab) => (
             <TabButton
               key={tab.id}
               active={activeTab === tab.id}
@@ -97,25 +138,21 @@ function NotificationsPharmacy() {
         </div>
 
         <div className="notifications-list">
-          {notifications?.filter(notif => activeTab === 'all' || notif.type === activeTab)
-            .filter(notif => 
-              notif.message.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-            .map(notification => (
+        {/* <pre>{JSON.stringify(notifications,null,2 )}</pre> */}
+
+          {filteredNotifications.length > 0 ? (
+            filteredNotifications.map((notification) => (
               <NotificationCard
                 key={notification.id}
-                type={notification.type}
-                message={notification.message}
-                time={notification.time}
-                isRead={notification.isRead}
-                id={notification.id}
+                id={notification.notification_id}
+                order_id={notification.order_id || null}
+                message={notification.notification_msg}
+                time={notification.created_at}
+                isRead={notification.is_read}
+                onFetchOrderDetails={activeTab === "orders" ? fetchOrderDetails : null}
               />
-            ))}
-          {(!notifications || notifications
-            .filter(notif => activeTab === 'all' || notif.type === activeTab)
-            .filter(notif => 
-              notif.message.toLowerCase().includes(searchQuery.toLowerCase())
-            ).length === 0) && (
+            ))
+          ) : (
             <div className="no-notifications">
               <FontAwesomeIcon icon={faBell} />
               <p>No notifications found</p>
@@ -125,6 +162,6 @@ function NotificationsPharmacy() {
       </div>
     </div>
   );
-}
+};
 
 export default NotificationsPharmacy;

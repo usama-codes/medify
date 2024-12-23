@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
 import "../App.css";
 import SideBar from "./SideBar";
 import Card from "./Card";
@@ -8,68 +9,64 @@ import {
   faDollarSign,
   faTruck,
   faTimesCircle,
-  faPencilAlt,
-  faTrashAlt,
   faFilter,
-  faArrowLeft,
   faSearch,
+  faArrowLeft,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchBar from "./SearchBar";
 import { Pie } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-} from "chart.js";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import BarChart from "./BarChart";
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const OrderPharmacy = () => {
   const { isSideBarOpen } = useContext(SidebarContext);
+  const [orderStats, setOrderStats] = useState({
+    totalOrders: 0,
+    pending: 0,
+    shipped: 0,
+    completed: 0,
+    cancelled: 0,
+    totalRevenue: 0,
+  });
+  const [topSellingProducts, setTopSellingProducts] = useState([]);
   const [orders, setOrders] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [searchResults, setSearchResults] = useState(false);
   const [filteredOrders, setFilteredOrders] = useState([]);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [filterType, setFilterType] = useState('all');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [editedOrder, setEditedOrder] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState(false);
   const [noResults, setNoResults] = useState(false);
+  const [filterType, setFilterType] = useState("all");
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [hasSearched, setHasSearched] = useState(false);
 
   const toggleFilter = () => {
     setIsFilterOpen(!isFilterOpen);
   };
 
-  const [orderStats, setOrderStats] = useState({
-    totalOrders: 0,
-    pending: 0,
-    shipped: 0,
-    canceled: 0,
-    totalRevenue: 0,
-  });
-
-  const showAllOrders = () => {
-  setFilterType('all');
-  setSearchTerm('');
-  setFilteredOrders(orders);
-  setSearchResults(true);
+  const getPlaceholderText = () => {
+    switch (filterType) {
+      case "orderId":
+        return "Order ID...";
+      case "productName":
+        return "Product Name...";
+      case "customerName":
+        return "Customer Name...";
+      case "status":
+        return "Status...";
+      default:
+        return "Search...";
+    }
   };
 
   const handleSearch = (term) => {
+    setSearchTerm(term);
+    setHasSearched(true);
+
     if (term.trim() === "") {
       setFilteredOrders([]);
       setSearchResults(false);
@@ -77,248 +74,146 @@ const OrderPharmacy = () => {
       return;
     }
 
-    let filtered;
-    switch (filterType) {
-    case 'orderId':
-      filtered = orders.filter(order => 
-        order.id.toString() === term.trim()
-      );
-      break;
-    case 'productName':
-      filtered = orders.filter(order => 
-        order.productName.toLowerCase().includes(term.toLowerCase())
-      );
-      break;
-    case 'customerName':
-      filtered = orders.filter(order => 
-        order.customerName.toLowerCase().includes(term.toLowerCase())
-      );
-      break;
-    case 'status':
-      filtered = orders.filter(order => 
-        order.status.toLowerCase().includes(term.toLowerCase())
-      );
-      break;
-    case 'all':
-      default:
-      filtered = orders.filter(order => 
-        order.id.toString().includes(term) ||
-        order.productName.toLowerCase().includes(term.toLowerCase()) ||
-        order.customerName.toLowerCase().includes(term.toLowerCase()) ||
-        order.status.toLowerCase().includes(term.toLowerCase())
-      );
-    }
-
-  setFilteredOrders(filtered);
-  setSearchResults(true);
-  setNoResults(filtered.length === 0);
-};
-
-  const handleBack = () => {
-    setSearchTerm('');
-    setFilteredOrders(orders);
-    setSearchResults(false);
-  };  
-
-  const handleCheckboxChange = (orderId) => {
-    setSelectedRows(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId)
-        : [...prev, orderId]
-    );
-  };
-
-  const handleSelectAll = (event) => {
-    setSelectedRows(
-      event.target.checked ? orders.map(order => order.id) : []
-    );
-  };
-
-  const handleEdit = (orderId) => {
-  const orderToEdit = orders.find(order => order.id === orderId);
-  setEditingId(orderId);
-  setEditedOrder({...orderToEdit});
-};
-
-  const handleSave = () => {
-    const updatedOrders = orders.map(order => 
-      order.id === editingId ? editedOrder : order
-    );
-    setOrders(updatedOrders);
-    
-    // Update filtered orders if search is active
-    if (searchResults) {
-      setFilteredOrders(updatedOrders.filter(order => 
-        filteredOrders.some(fo => fo.id === order.id)
-      ));
-    }
-
-    // Recalculate order stats
-    const newStats = updatedOrders.reduce(
-      (acc, order) => {
-        acc.totalOrders++;
-        acc.totalRevenue += parseFloat(order.revenue);
-        if (order.status === "Pending") acc.pending++;
-        if (order.status === "Shipped") acc.shipped++;
-        if (order.status === "Canceled") acc.canceled++;
-        return acc;
-      },
-      {
-        totalOrders: 0,
-        pending: 0,
-        shipped: 0,
-        canceled: 0,
-        totalRevenue: 0,
+    const filtered = orders.filter((order) => {
+      switch (filterType) {
+        case "orderId":
+          return order.order_id.toString().includes(term.trim());
+        case "productName":
+          return order.medicine_name.toLowerCase().includes(term.toLowerCase());
+        case "customerName":
+          return order.customer_name.toLowerCase().includes(term.toLowerCase());
+        case "status":
+          return order.status.toLowerCase().includes(term.toLowerCase());
+        default:
+          return (
+            order.order_id.toString().includes(term.trim()) ||
+            order.medicine_name.toLowerCase().includes(term.toLowerCase()) ||
+            order.customer_name.toLowerCase().includes(term.toLowerCase()) ||
+            order.status.toLowerCase().includes(term.toLowerCase())
+          );
       }
-    );
-    
-    setOrderStats(newStats);
-    setEditingId(null);
-    setEditedOrder(null);
-  };
-
-  const handleDelete = (orderId) => {
-    // Confirm before deletion
-    if (!window.confirm('Are you sure you want to delete this order?')) {
-      return;
-    }
-
-    // Remove from orders
-    const updatedOrders = orders.filter(order => order.id !== orderId);
-    setOrders(updatedOrders);
-
-    // Update filtered orders if search is active
-    if (searchResults) {
-      setFilteredOrders(filteredOrders.filter(order => order.id !== orderId));
-    }
-
-  // Recalculate order stats
-  const newStats = updatedOrders.reduce(
-    (acc, order) => {
-      acc.totalOrders++;
-      acc.totalRevenue += parseFloat(order.revenue);
-      if (order.status === "Pending") acc.pending++;
-      if (order.status === "Shipped") acc.shipped++;
-      if (order.status === "Canceled") acc.canceled++;
-      return acc;
-    },
-    {
-      totalOrders: 0,
-      pending: 0,
-      shipped: 0,
-      canceled: 0,
-      totalRevenue: 0,
-    }
-  );
-  
-  setOrderStats(newStats);
-  
-  // Clear selection if deleted order was selected
-  setSelectedRows(prev => prev.filter(id => id !== orderId));
-};
-
-  const handleCancel = () => {
-    setEditingId(null);
-    setEditedOrder(null);
-  };
-
-  const handleInputChange = (e, field) => {
-    setEditedOrder({
-      ...editedOrder,
-      [field]: e.target.value
     });
-  };
 
-  const getPlaceholderText = () => {
-    switch (filterType) {
-      case 'orderId':
-        return 'Order ID...';
-      case 'productName':
-        return 'Product Name...';
-      case 'customerName':
-        return 'Customer Name...';
-      case 'status':
-        return 'Status...';
-      default:
-        return 'Search...';
+    setFilteredOrders(filtered);
+    setSearchResults(true);
+    setNoResults(filtered.length === 0);
+  };
+  const handleEdit = async (id, field, value) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("authToken");
+      const headers = { Authorization: `Bearer ${token}` };
+  
+      // Update the order in the backend
+      await axios.put(
+        `http://localhost:4000/api/pharmacy/order/${id}`, 
+        { [field]: value }, 
+        { headers }
+      );
+  
+      // Update the local state after the API call succeeds
+      setFilteredOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === id ? { ...order, [field]: value } : order
+        )
+      );
+      setOrders((prevOrders) =>
+        prevOrders.map((order) =>
+          order.order_id === id ? { ...order, [field]: value } : order
+        )
+      );
+    } catch (error) {
+      console.error("Error updating order:", error);
+      setError("Failed to update the order. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
+  
 
-  useEffect(() => {
-    const fetchOrders = () => {
-      const fetchedOrders = [
-        {
-          id: 1,
-          status: "Pending",
-          productName: "Aspirin",
-          customerName: "John Doe",
-          date: "2024-12-10",
-          revenue: 15.99,
-        },
-        {
-          id: 2,
-          status: "Shipped",
-          productName: "Tylenol",
-          customerName: "Jane Smith",
-          date: "2024-12-08",
-          revenue: 12.49,
-        },
-        {
-          id: 3,
-          status: "Canceled",
-          productName: "Advil",
-          customerName: "Alice Brown",
-          date: "2024-12-05",
-          revenue: 8.99,
-        },
-        {
-          id: 4,
-          status: "Pending",
-          productName: "Ibuprofen",
-          customerName: "Bob White",
-          date: "2024-12-06",
-          revenue: 9.99,
-        },
-        {
-          id: 5,
-          status: "Shipped",
-          productName: "Aspirin",
-          customerName: "Charlie Black",
-          date: "2024-12-07",
-          revenue: 16.49,
-        },
-      ];
-
-      setOrders(fetchedOrders);
-
-      const stats = fetchedOrders.reduce(
-        (acc, order) => {
-          acc.totalOrders++;
-          acc.totalRevenue += order.revenue;
-          if (order.status === "Pending") acc.pending++;
-          if (order.status === "Shipped") acc.shipped++;
-          if (order.status === "Canceled") acc.canceled++;
-          return acc;
-        },
-        {
-          totalOrders: 0,
-          pending: 0,
-          shipped: 0,
-          canceled: 0,
-          totalRevenue: 0,
-        }
+  const handleDelete = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem("authToken");
+      const headers = { Authorization: `Bearer ${token}` };
+  
+      // Send a DELETE request to the API
+      await axios.delete(`http://localhost:4000/api/pharmacy/order/${id}`, { headers });
+  
+      // Update the local state to remove the deleted order
+      setFilteredOrders((prevOrders) =>
+        prevOrders.filter((order) => order.order_id !== id)
       );
-      setOrderStats(stats);
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => order.order_id !== id)
+      );
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      setError("Failed to delete the order. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    const headers = { Authorization: `Bearer ${token}` };
+
+    const fetchOrdersData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [
+          totalOrdersRes,
+          shippedOrdersRes,
+          pendingOrdersRes,
+          cancelledOrdersRes,
+          completedOrdersRes,
+          ordersRes,
+          topSellingRes,
+        ] = await Promise.all([
+          axios.get("http://localhost:4000/api/pharmacy/total-orders", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/shipped-count", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/pending-count", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/cancelled-orders", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/complete-orders", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/allorder", { headers }),
+          axios.get("http://localhost:4000/api/pharmacy/top-selling-products", { headers }),
+        ]);
+
+        setOrderStats({
+          totalOrders: totalOrdersRes.data.totalOrdersCount || 0,
+          pending: pendingOrdersRes.data.pendingOrderCount || 0,
+          shipped: shippedOrdersRes.data.shippedOrdersCount || 0,
+          cancelled: cancelledOrdersRes.data.cancelledOrdersCount || 0,
+          completed: completedOrdersRes.data.completedOrdersCount || 0,
+        });
+
+        setOrders(ordersRes.data.data || []);
+        setTopSellingProducts(
+          topSellingRes.data.topProduct.map((product) => ({
+            name: product.product_name,
+            sales: product.total_sales,
+          })) || []
+        );
+      } catch (error) {
+        console.error("Error fetching orders data:", error);
+        setError("Failed to load data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchOrders();
+    fetchOrdersData();
   }, []);
 
   const pieChartData = {
-    labels: ["Pending", "Shipped", "Canceled"],
+    labels: ["Pending", "Shipped", "Completed"],
     datasets: [
       {
-        data: [orderStats.pending, orderStats.shipped, orderStats.canceled],
+        data: [orderStats.pending, orderStats.shipped, orderStats.completed],
         backgroundColor: ["#44a3a5", "#70c3c5", "#197274"],
         borderColor: ["#44a3a5", "#70c3c5", "#197274"],
         borderWidth: 2,
@@ -332,273 +227,132 @@ const OrderPharmacy = () => {
         position: "bottom",
       },
     },
-    interaction: {
-            mode: 'nearest',
-            axis: 'x',
-            intersect: false,
-          },
-    hover: {
-            onHover: function (e) {
-              const point = this.getElementsAtEventForMode(e, 'nearest', { intersect: true }, true);
-              e.native.target.style.cursor = point.length ? 'pointer' : 'default';
-            },
-          },
     responsive: true,
     maintainAspectRatio: false,
   };
 
-return (
-  <div className={`main-container ${isSideBarOpen ? "sidebar-open" : ""}`}>
-    <SideBar />
-    <div className="content">
-      <div className="search-bar-container">
-        <div className="searchInputWrapper">
-          <SearchBar
-            searchTerm={searchTerm}
-            searchResults={searchResults}
-            onSearch={handleSearch}
-            onBack={handleBack}
-            placeholder={getPlaceholderText()}
-            icon={searchResults ? faArrowLeft : faSearch  }
-          />
-          <button
-            className={`filter-button ${isFilterOpen ? 'active' : ''}`}
-            onClick={toggleFilter}
-          >
-            <FontAwesomeIcon icon={faFilter} size="lg"/>
-          </button>
-          {isFilterOpen && (
-            <div className="filter-dropdown">
-              <div 
-                className={`filter-option ${filterType === 'all' ? 'active' : ''}`}
-                onClick={() => {
-                  setFilterType('all');
-                  showAllOrders();
-                  toggleFilter();
-                }}
-              >
-                All Orders
+  return (
+    <div className={`main-container ${isSideBarOpen ? "sidebar-open" : ""}`}>
+      <SideBar />
+      <div className="content">
+        <div className="search-bar-container">
+          <div className="searchInputWrapper">
+            <SearchBar
+              searchTerm={searchTerm}
+              searchResults={searchResults}
+              onSearch={handleSearch}
+              onBack={() => setSearchTerm("")}
+              placeholder={getPlaceholderText()}
+              icon={searchResults ? faArrowLeft : faSearch}
+            />
+            <button
+              className={`filter-button ${isFilterOpen ? "active" : ""}`}
+              onClick={toggleFilter}
+            >
+              <FontAwesomeIcon icon={faFilter} size="lg" />
+            </button>
+            {isFilterOpen && (
+              <div className="filter-dropdown">
+                <ul>
+                  <li onClick={() => { setFilterType("orderId"); toggleFilter(); }}>Order ID</li>
+                  <li onClick={() => { setFilterType("productName"); toggleFilter(); }}>Product Name</li>
+                  <li onClick={() => { setFilterType("customerName"); toggleFilter(); }}>Customer Name</li>
+                  <li onClick={() => { setFilterType("status"); toggleFilter(); }}>Status</li>
+                  <li onClick={() => { setFilterType("all"); toggleFilter(); }}>All</li>
+                </ul>
               </div>
-              <div 
-                className={`filter-option ${filterType === 'orderId' ? 'active' : ''}`}
-                onClick={() => {
-                  setFilterType('orderId');
-                  toggleFilter();
-                }}
-              >
-                Order ID
-              </div>
-              <div 
-                className={`filter-option ${filterType === 'productName' ? 'active' : ''}`}
-                onClick={() => {
-                  setFilterType('productName');
-                  toggleFilter();
-                }}
-              >
-                Product Name
-              </div>
-              <div 
-                className={`filter-option ${filterType === 'customerName' ? 'active' : ''}`}
-                onClick={() => {
-                  setFilterType('customerName');
-                  toggleFilter();
-                }}
-              >
-                Customer Name
-              </div>
-              <div 
-                className={`filter-option ${filterType === 'status' ? 'active' : ''}`}
-                onClick={() => {
-                  setFilterType('status');
-                  toggleFilter();
-                }}
-              >
-                Status
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
-      {searchResults ? (
-        noResults ? (
-          <div className="no-results"><h2>No results found</h2></div>
-        ) : (
-          <div className="table-container">
-            <table className="table">
+        <div className="card-container">
+          <Card title="Total Orders" content={orderStats.totalOrders} icon={faShoppingCart} color="#014d4e" />
+          <Card title="Shipped Orders" content={orderStats.shipped} icon={faTruck} color="#fff" textColor="#014d4e" iconColor="#014d4e" />
+          <Card title="Pending Orders" content={orderStats.pending} icon={faTimesCircle} color="#fff" textColor="#014d4e" iconColor="#014d4e" />
+          <Card title="Completed Orders" content={orderStats.completed} icon={faDollarSign} color="#014d4e" />
+          <Card title="Cancelled Orders" content={orderStats.cancelled} icon={faTimesCircle} color="#fff" textColor="#014d4e" iconColor="#014d4e" />
+        </div>
+        <div className="charts-container">
+          <div className="pie-chart">
+            <h3>Order Status</h3>
+            <div className="pieChart">
+              <Pie data={pieChartData} options={pieChartOptions} />
+            </div>
+          </div>
+          <div className="bar-chart">
+            <h3>Top Products</h3>
+            <div className="barChart">
+              <BarChart products={topSellingProducts} />
+            </div>
+          </div>
+        </div>
+        <div className="order-table-container">
+          {loading && <p>Loading...</p>}
+          {error && <p className="error-message">{error}</p>}
+          {hasSearched && (
+            <table className="order-table">
               <thead>
                 <tr>
-                  <th className="checkbox-cell">
-                    <input
-                      type="checkbox"
-                      className="order-checkbox"
-                      checked={selectedRows.length === filteredOrders.length}
-                      onChange={handleSelectAll}
-                    />
-                  </th>
                   <th>Order ID</th>
                   <th>Product Name</th>
                   <th>Customer Name</th>
-                  <th>Date</th>
                   <th>Status</th>
-                  <th>Cost</th>
-                  <th className="action-cell">Actions</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-              {filteredOrders.map((order) => (
-                <tr key={order.id}>
-                  <td className="checkbox-cell">
-                    <input
-                      type="checkbox"
-                      className="order-checkbox"
-                      checked={selectedRows.includes(order.id)}
-                      onChange={() => handleCheckboxChange(order.id)}
-                    />
-                  </td>
-                  <td>{order.id}</td>
-                  <td>
-                    {editingId === order.id ? (
-                      <input
-                        value={editedOrder.productName}
-                        onChange={(e) => handleInputChange(e, 'productName')}
-                      />
-                    ) : (
-                      order.productName
-                    )}
-                    </td>
-                    <td>
-                      {editingId === order.id ? (
+                {filteredOrders.length > 0 ? (
+                  filteredOrders.map((order) => (
+                    <tr key={order.order_id}>
+                      <td>{order.order_id}</td>
+                      <td>
                         <input
-                          value={editedOrder.customerName}
-                          onChange={(e) => handleInputChange(e, 'customerName')}
+                          type="text"
+                          value={order.medicine_name}
+                          onChange={(e) =>
+                            handleEdit(order.order_id, "medicine_name", e.target.value)
+                          }
                         />
-                      ) : (
-                        order.customerName
-                      )}
-                    </td>
-                    <td>
-                      {editingId === order.id ? (
+                      </td>
+                      <td>
                         <input
-                          type="date"
-                          value={editedOrder.date}
-                          onChange={(e) => handleInputChange(e, 'date')}
+                          type="text"
+                          value={order.customer_name}
+                          onChange={(e) =>
+                            handleEdit(order.order_id, "customer_name", e.target.value)
+                          }
                         />
-                      ) : (
-                        order.date
-                      )}
-                    </td>
-                        <td>
-                      {editingId === order.id ? (
-                        <select
-                          value={editedOrder.status}
-                          onChange={(e) => handleInputChange(e, 'status')}
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          value={order.status}
+                          onChange={(e) =>
+                            handleEdit(order.order_id, "status", e.target.value)
+                          }
+                        />
+                      </td>
+                      <td>
+                        <button
+                          onClick={() => handleDelete(order.order_id)}
+                          className="delete-button"
                         >
-                          <option value="Pending">Pending</option>
-                          <option value="Shipped">Shipped</option>
-                          <option value="Canceled">Canceled</option>
-                        </select>
-                      ) : (
-                        order.status
-                      )}
-                    </td>
-                    <td>
-                      {editingId === order.id ? (
-                        <input
-                          type="number"
-                          value={editedOrder.revenue}
-                          onChange={(e) => handleInputChange(e, 'revenue')}
-                          step="0.01"
-                        />
-                      ) : (
-                        `$${order.revenue.toFixed(2)}`
-                      )}
-                    </td>
-                    <td className="action-cell">
-                      <div className="action-icons">
-                        {editingId === order.id ? (
-                          <>
-                            <button onClick={handleSave}>Save</button>
-                            <button onClick={handleCancel}>Cancel</button>
-                          </>
-                        ) : (
-                          <>
-                            <FontAwesomeIcon
-                              icon={faPencilAlt}
-                              className="action-icon edit-icon"
-                              onClick={() => handleEdit(order.id)}
-                            />
-                            <FontAwesomeIcon
-                              icon={faTrashAlt}
-                              className="action-icon delete-icon"
-                              onClick={() => handleDelete(order.id)}
-                            />
-                          </>
-                        )}
-                      </div>
-                    </td>
+                          <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="5">No orders found.</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-          </div>
-        )
-      ) : (
-        <>
-          <div className="card-container">
-            <Card
-              title="Total Orders"
-              content={orderStats.totalOrders}
-              icon={faShoppingCart}
-              color="#014d4e"
-            />
-            <Card
-              title="Shipped Orders"
-              content={orderStats.shipped}
-              icon={faTruck}
-              color="#fff"
-              textColor="#014d4e"
-              iconColor="#014d4e"
-            />
-            <Card
-              title="Canceled Orders"
-              content={orderStats.canceled}
-              icon={faTimesCircle}
-              color="#014d4e"
-            />
-            <Card
-              title="Pending Orders"
-              content={orderStats.pending}
-              icon={faTimesCircle}
-              color="#fff"
-              textColor="#014d4e"
-              iconColor="#014d4e"
-            />
-            <Card
-              title="Total Revenue"
-              content={`$${orderStats.totalRevenue.toFixed(2)}`}
-              icon={faDollarSign}
-              color="#014d4e"
-            />
-          </div>
-          <div className="charts-container">
-            <div className="pie-chart">
-              <h3>Order Status</h3>
-              <div className="pieChart">
-                <Pie data={pieChartData} options={pieChartOptions} />
-              </div>
-            </div>
-            <div className="bar-chart">
-              <h3>Top Products</h3>
-              <div className="barChart">
-                <BarChart />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+          )}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
 };
 
 export default OrderPharmacy;
